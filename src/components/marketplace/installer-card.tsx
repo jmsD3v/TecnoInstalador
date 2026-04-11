@@ -42,7 +42,7 @@ export function InstallerCard({ installer, className }: InstallerCardProps) {
                 <h3 className="font-bold text-base leading-tight truncate">
                   {installer.nombre_comercial ?? `${installer.nombre} ${installer.apellido}`}
                 </h3>
-                <p className="text-sm text-muted-foreground truncate">{mainTrade}</p>
+                <p className="text-sm text-muted-foreground truncate">{installer.titulo_profesional || mainTrade}</p>
               </div>
               <PlanBadge plan={installer.plan} className="shrink-0" />
             </div>

@@ -41,8 +41,10 @@ export interface Installer {
   trial_ends_at?: string
   is_active: boolean
   color_palette: ColorPalette
+  titulo_profesional?: string
   foto_perfil_url?: string
   banner_url?: string
+  banner_position_y?: number
   dominio_personalizado?: string
   dominio_personalizado_activo: boolean
   total_reviews: number
