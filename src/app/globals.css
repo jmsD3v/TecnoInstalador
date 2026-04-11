@@ -1,0 +1,34 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════════════════════════
+   TEMA CLARO (default)
+═══════════════════════════════════════════════════════════════ */
+:root {
+  --background: 30 15% 97%;          /* #f7f5f2 — crema suave */
+  --foreground: 215 28% 14%;         /* #192130 — navy oscuro */
+  --card: 0 0% 100%;                 /* blanco puro */
+  --card-foreground: 215 28% 14%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 215 28% 14%;
+  --primary: 25 95% 53%;             /* #f97316 — naranja industrial */
+  --primary-foreground: 20 14% 10%;
+  --secondary: 215 15% 93%;          /* acero claro */
+  --secondary-foreground: 215 28% 14%;
+  --muted: 215 15% 93%;
+  --muted-foreground: 215 12% 45%;   /* gris medio */
+  --accent: 215 15% 90%;
+  --accent-foreground: 215 28% 14%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 215 15% 88%;
+  --input: 215 15% 88%;
+  --ring: 25 95% 53%;
+  --radius: 0.5rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TEMA OSCURO (industrial — default del producto)
+═══════════════════════════════════════════════════════════════ */
+.dark {
+  --background: 215 28% 9%;          /* #0e1823 — carbón */
+  --foreground: 210 17% 91%;         /* #e3e8ed 
