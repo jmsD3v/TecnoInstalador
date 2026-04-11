@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next"
 import localFont from "next/font/local"
 import "./globals.css"
 import { ToastContextProvider } from "@/components/ui/toast"
+import { ThemeProvider } from "@/components/theme/theme-provider"
 
 //Monaspace Krypton — descargá desde https://monaspace.githubnext.com/
 //Ponés los .woff2 en src/app/fonts/ y descomentás esta sección:
@@ -52,11 +53,18 @@ export default function RootLayout({
     <html lang="es" suppressHydrationWarning className={monaspaceKrypton.variable}>
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        {/* Script anti-flash: aplica el tema guardado antes de que React hidrate */}
+        <script dangerouslySetInnerHTML={{ __html:
+          `(function(){var t=localStorage.getItem('theme')||'dark';` +
+          `document.documentElement.classList.add(t==='dark'?'dark':'light')})()`
+        }} />
       </head>
       <body className="antialiased bg-background text-foreground">
-        <ToastContextProvider>
-          {children}
-        </ToastContextProvider>
+        <ThemeProvider>
+          <ToastContextProvider>
+            {children}
+          </ToastContextProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

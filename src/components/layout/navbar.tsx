@@ -7,6 +7,7 @@ import { Wrench, Menu, X, LogOut, LayoutDashboard } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { createClient } from "@/lib/supabase/client"
 import { cn } from "@/lib/utils"
+import { ThemeToggle } from "@/components/theme/theme-toggle"
 
 interface NavbarProps {
   user?: unknown
@@ -55,6 +56,7 @@ export function Navbar({ user }: NavbarProps) {
         </nav>
 
         <div className="hidden md:flex items-center gap-2">
+          <ThemeToggle size="sm" />
           {user ? (
             <>
               <Button variant="ghost" size="sm" asChild>
@@ -80,13 +82,16 @@ export function Navbar({ user }: NavbarProps) {
           )}
         </div>
 
-        <button
-          className="md:hidden p-2 rounded-lg hover:bg-accent transition-colors"
-          onClick={() => setMobileOpen(!mobileOpen)}
-          aria-label="Menú"
-        >
-          {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-        </button>
+        <div className="md:hidden flex items-center gap-2">
+          <ThemeToggle size="sm" />
+          <button
+            className="p-2 rounded-lg hover:bg-accent transition-colors"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Menú"
+          >
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+          </button>
+        </div>
       </div>
 
       {mobileOpen && (
