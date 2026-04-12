@@ -21,6 +21,8 @@ export function useScrollAnimation(
   const ref = useRef<HTMLElement>(null)
 
   useEffect(() => {
+    // One-shot animation — options changes after mount are intentionally ignored.
+    // Callers should treat this hook as fire-and-forget on mount.
     if (!ref.current) return
 
     const elements = ref.current.querySelectorAll(selector)
@@ -29,7 +31,6 @@ export function useScrollAnimation(
     const ctx = gsap.context(() => {
       gsap.from(elements, {
         opacity: 0,
-        y: options.from?.y ?? 40,
         duration: 0.6,
         ease: 'power2.out',
         stagger: options.stagger ?? 0.1,
@@ -43,7 +44,7 @@ export function useScrollAnimation(
     }, ref)
 
     return () => ctx.revert()
-  }, [selector, options.stagger])
+  }, [selector, options.stagger]) // eslint-disable-line react-hooks/exhaustive-deps
 
   return ref
 }
