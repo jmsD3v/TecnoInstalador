@@ -1,17 +1,17 @@
 import { describe, it, expect } from 'vitest'
-import { subscribeSchema, cancelSchema, adminToggleActiveSchema, adminTogglePublicSchema } from '@/lib/validations'
+import { subscribeSchema, cancelSchema, adminToggleActiveSchema, adminTogglePublicSchema, reviewInviteSchema, resetPasswordSchema, updatePasswordSchema } from '@/lib/validations'
 
 describe('subscribeSchema', () => {
   it('accepts valid payload', () => {
-    const result = subscribeSchema.safeParse({ planId: 'abc123', billingPeriod: 'monthly' })
+    const result = subscribeSchema.safeParse({ plan: 'PRO', period: 'monthly' })
     expect(result.success).toBe(true)
   })
-  it('rejects missing planId', () => {
-    const result = subscribeSchema.safeParse({ billingPeriod: 'monthly' })
+  it('rejects invalid plan', () => {
+    const result = subscribeSchema.safeParse({ plan: 'FREE', period: 'monthly' })
     expect(result.success).toBe(false)
   })
-  it('rejects invalid billingPeriod', () => {
-    const result = subscribeSchema.safeParse({ planId: 'abc', billingPeriod: 'weekly' })
+  it('rejects invalid period', () => {
+    const result = subscribeSchema.safeParse({ plan: 'PRO', period: 'weekly' })
     expect(result.success).toBe(false)
   })
 })
@@ -38,5 +38,42 @@ describe('adminTogglePublicSchema', () => {
   it('accepts boolean is_public', () => {
     const result = adminTogglePublicSchema.safeParse({ is_public: true })
     expect(result.success).toBe(true)
+  })
+})
+
+describe('reviewInviteSchema', () => {
+  it('accepts email without phone', () => {
+    const result = reviewInviteSchema.safeParse({ client_email: 'a@b.com' })
+    expect(result.success).toBe(true)
+  })
+  it('accepts phone without email', () => {
+    const result = reviewInviteSchema.safeParse({ client_phone: '1234567890' })
+    expect(result.success).toBe(true)
+  })
+  it('rejects when both email and phone are missing', () => {
+    const result = reviewInviteSchema.safeParse({ client_name: 'Juan' })
+    expect(result.success).toBe(false)
+  })
+})
+
+describe('resetPasswordSchema', () => {
+  it('accepts valid email', () => {
+    const result = resetPasswordSchema.safeParse({ email: 'user@example.com' })
+    expect(result.success).toBe(true)
+  })
+  it('rejects invalid email', () => {
+    const result = resetPasswordSchema.safeParse({ email: 'notanemail' })
+    expect(result.success).toBe(false)
+  })
+})
+
+describe('updatePasswordSchema', () => {
+  it('accepts password >= 8 chars', () => {
+    const result = updatePasswordSchema.safeParse({ password: 'securepassword' })
+    expect(result.success).toBe(true)
+  })
+  it('rejects password < 8 chars', () => {
+    const result = updatePasswordSchema.safeParse({ password: 'short' })
+    expect(result.success).toBe(false)
   })
 })

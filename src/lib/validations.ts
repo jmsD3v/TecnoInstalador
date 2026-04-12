@@ -1,8 +1,8 @@
 import { z } from 'zod'
 
 export const subscribeSchema = z.object({
-  planId: z.string().min(1),
-  billingPeriod: z.enum(['monthly', 'annual']),
+  plan: z.enum(['PRO', 'PREMIUM']),
+  period: z.enum(['monthly', 'annual']),
 })
 
 export const cancelSchema = z.object({
