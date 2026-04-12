@@ -1,6 +1,6 @@
 import type { NextConfig } from "next"
 
-const CSP = [
+export const CSP = [
   "default-src 'self'",
   "img-src 'self' data: blob: https://*.supabase.co",
   "script-src 'self' 'unsafe-inline'",
