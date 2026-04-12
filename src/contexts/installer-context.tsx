@@ -10,10 +10,12 @@ interface InstallerContextValue {
   refreshInstaller: () => Promise<void>
 }
 
+// Module-level singleton — stable reference, no re-render issues
+const supabase = createClient()
+
 const InstallerContext = createContext<InstallerContextValue | null>(null)
 
 export function InstallerProvider({ children }: { children: React.ReactNode }) {
-  const supabase = createClient()
   const [installer, setInstaller] = useState<Installer | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -29,7 +31,7 @@ export function InstallerProvider({ children }: { children: React.ReactNode }) {
 
     setInstaller(data ?? null)
     setLoading(false)
-  }, [supabase])
+  }, []) // supabase is module-level, not a dep
 
   useEffect(() => { fetchInstaller() }, [fetchInstaller])
 
