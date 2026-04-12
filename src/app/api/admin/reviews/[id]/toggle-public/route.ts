@@ -18,7 +18,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   )
 
   const update: Record<string, unknown> = { is_public: parsed.data.is_public }
-  if (!parsed.data.is_public) update.deleted_at = new Date().toISOString()
+  if (!parsed.data.is_public) {
+    update.deleted_at = new Date().toISOString()
+  } else {
+    update.deleted_at = null
+  }
 
   const { error } = await supabase.from('reviews').update(update).eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
