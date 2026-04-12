@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { getMPClient, MP_PLAN_IDS, getPlanKey } from '@/lib/mercadopago'
 import { PreApproval } from 'mercadopago'
+import { z } from 'zod'
+
+const subscribeRouteSchema = z.object({
+  plan: z.enum(['PRO', 'PREMIUM']),
+  period: z.enum(['monthly', 'annual']),
+})
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient()
@@ -9,12 +15,11 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const plan: 'PRO' | 'PREMIUM' = body.plan
-  const period: 'monthly' | 'annual' = body.period
-
-  if (!['PRO', 'PREMIUM'].includes(plan) || !['monthly', 'annual'].includes(period)) {
-    return NextResponse.json({ error: 'Invalid plan or period' }, { status: 400 })
+  const parsed = subscribeRouteSchema.safeParse(body)
+  if (!parsed.success) {
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
   }
+  const { plan, period } = parsed.data
 
   const { data: installer } = await supabase
     .from('installers')
