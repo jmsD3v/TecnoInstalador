@@ -32,12 +32,28 @@ describe('adminToggleActiveSchema', () => {
     const result = adminToggleActiveSchema.safeParse({ is_active: false })
     expect(result.success).toBe(true)
   })
+  it('rejects string instead of boolean', () => {
+    const result = adminToggleActiveSchema.safeParse({ is_active: 'true' })
+    expect(result.success).toBe(false)
+  })
+  it('rejects missing field', () => {
+    const result = adminToggleActiveSchema.safeParse({})
+    expect(result.success).toBe(false)
+  })
 })
 
 describe('adminTogglePublicSchema', () => {
   it('accepts boolean is_public', () => {
     const result = adminTogglePublicSchema.safeParse({ is_public: true })
     expect(result.success).toBe(true)
+  })
+  it('rejects string instead of boolean', () => {
+    const result = adminTogglePublicSchema.safeParse({ is_public: 'false' })
+    expect(result.success).toBe(false)
+  })
+  it('rejects missing field', () => {
+    const result = adminTogglePublicSchema.safeParse({})
+    expect(result.success).toBe(false)
   })
 })
 

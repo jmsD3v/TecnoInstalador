@@ -2,12 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { getMPClient, MP_PLAN_IDS, getPlanKey } from '@/lib/mercadopago'
 import { PreApproval } from 'mercadopago'
-import { z } from 'zod'
-
-const subscribeRouteSchema = z.object({
-  plan: z.enum(['PRO', 'PREMIUM']),
-  period: z.enum(['monthly', 'annual']),
-})
+import { subscribeSchema } from '@/lib/validations'
 
 export async function POST(req: NextRequest) {
   const supabase = await createServerSupabaseClient()
@@ -15,7 +10,7 @@ export async function POST(req: NextRequest) {
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const body = await req.json()
-  const parsed = subscribeRouteSchema.safeParse(body)
+  const parsed = subscribeSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json({ error: 'Invalid request' }, { status: 400 })
   }
