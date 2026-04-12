@@ -8,6 +8,7 @@ import { createClient } from "@/lib/supabase/client"
 import { useToast } from "@/components/ui/toast"
 import { Review } from "@/types"
 import { ReviewCard } from "@/components/reviews/review-card"
+import { ReviewCardSkeleton } from "@/components/skeletons/review-card-skeleton"
 import { StarRating } from "@/components/ui/avatar"
 import { MessageSquarePlus, Star } from "lucide-react"
 import Link from "next/link"
@@ -72,8 +73,8 @@ export default function ReviewsPage() {
   }
 
   if (loading) return (
-    <div className="flex items-center justify-center h-64">
-      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+    <div className="max-w-2xl mx-auto space-y-3">
+      {Array.from({ length: 3 }).map((_, i) => <ReviewCardSkeleton key={i} />)}
     </div>
   )
 

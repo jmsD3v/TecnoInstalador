@@ -5,6 +5,7 @@ import { InstallerCard } from "@/components/marketplace/installer-card"
 import { sortInstallersByPlan } from "@/lib/plans"
 import { Search } from "lucide-react"
 import { MarketplaceFilters } from "./filters"
+import { InstallerCardSkeleton } from "@/components/skeletons/installer-card-skeleton"
 
 interface SearchParams {
   ciudad?: string
@@ -89,8 +90,10 @@ export default async function BuscarPage({ searchParams }: Props) {
 
           <div className="mt-8">
             <Suspense fallback={
-              <div className="flex items-center justify-center py-12">
-                <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <InstallerCardSkeleton key={i} />
+                ))}
               </div>
             }>
               <Results searchParams={params} />
