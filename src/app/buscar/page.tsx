@@ -8,8 +8,8 @@ import { MarketplaceFilters } from "./filters"
 
 interface SearchParams {
   ciudad?: string
+  provincia?: string
   trade?: string
-  service?: string
 }
 
 interface Props {
@@ -18,51 +18,35 @@ interface Props {
 
 async function Results({ searchParams }: { searchParams: SearchParams }) {
   const supabase = await createServerSupabaseClient()
-  const { ciudad, trade, service } = searchParams
+  const { ciudad, provincia, trade } = searchParams
 
-  if (!ciudad) {
+  if (!ciudad && !provincia) {
     return (
       <div className="text-center py-12 text-muted-foreground">
         <Search className="w-12 h-12 mx-auto mb-3 opacity-20" />
-        <p className="font-medium">Ingresá una ciudad para buscar instaladores</p>
+        <p className="font-medium">Seleccioná una provincia o ciudad para buscar</p>
       </div>
     )
   }
 
-  // Build query
   let query = supabase
     .from('installers')
-    .select(`
-      *,
-      installer_trades!inner(
-        trade:trades(*)
-      )
-    `)
+    .select(`*, installer_trades!inner(trade:trades(*))`)
     .eq('is_active', true)
-    .ilike('ciudad', `%${ciudad}%`)
 
-  if (trade) {
-    // Filter by trade slug via join
-    query = supabase
-      .from('installers')
-      .select(`
-        *,
-        installer_trades!inner(
-          trade:trades!inner(*)
-        )
-      `)
-      .eq('is_active', true)
-      .ilike('ciudad', `%${ciudad}%`)
-      .eq('installer_trades.trade.slug', trade)
-  }
+  if (ciudad) query = query.ilike('ciudad', `%${ciudad}%`)
+  if (provincia && provincia !== 'todas') query = query.ilike('provincia', `%${provincia}%`)
+  if (trade && trade !== 'todos') query = query.eq('installer_trades.trade.slug', trade)
 
   const { data: installers } = await query
+
+  const location = [ciudad, provincia && provincia !== 'todas' ? provincia : ''].filter(Boolean).join(', ')
 
   if (!installers || installers.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
         <Search className="w-12 h-12 mx-auto mb-3 opacity-20" />
-        <p className="font-medium">No encontramos instaladores en {ciudad}</p>
+        <p className="font-medium">No encontramos instaladores en {location}</p>
         <p className="text-sm mt-1">Probá con otra ciudad u oficio</p>
       </div>
     )
@@ -73,7 +57,7 @@ async function Results({ searchParams }: { searchParams: SearchParams }) {
   return (
     <div>
       <p className="text-sm text-muted-foreground mb-4">
-        {sorted.length} resultado(s) en <strong>{ciudad}</strong>
+        {sorted.length} resultado(s) en <strong>{location}</strong>
       </p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {sorted.map(installer => (
@@ -101,7 +85,7 @@ export default async function BuscarPage({ searchParams }: Props) {
             Encontrá al profesional ideal por ciudad y oficio
           </p>
 
-          <MarketplaceFilters trades={trades ?? []} initialParams={params} />
+          <MarketplaceFilters trades={trades ?? []} initialParams={params as any} />
 
           <div className="mt-8">
             <Suspense fallback={

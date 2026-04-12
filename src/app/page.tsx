@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Navbar } from "@/components/layout/navbar"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { fetchPlanPrices } from "@/lib/mp-plans"
 
 const TRADES = [
   { icon: Zap,         label: "Electricidad",    gradient: "from-yellow-400 to-amber-500",   shadow: "shadow-yellow-500/20" },
@@ -56,36 +57,31 @@ const FEATURES = [
   },
 ]
 
-const PLANS = [
+const PLAN_META = [
   {
+    key: "FREE",
     name: "Gratis",
-    price: "$0",
     desc: "Para empezar a ganar visibilidad",
     features: ["1 oficio", "3 servicios", "5 fotos en galería", "Reseñas verificadas", "Botón WhatsApp"],
     cta: "Empezar gratis",
     variant: "outline" as const,
-    accent: "border-border",
   },
   {
+    key: "PRO",
     name: "Pro",
-    price: "$4.999",
-    period: "/mes",
     desc: "Para profesionales activos",
     features: ["3 oficios", "10 servicios", "30 fotos", "Presupuestos en la app", "Mejor posición en búsqueda"],
     cta: "Probar 14 días gratis",
     variant: "default" as const,
     highlighted: true,
-    accent: "border-primary",
   },
   {
+    key: "PREMIUM",
     name: "Premium",
-    price: "$9.999",
-    period: "/mes",
     desc: "Para negocios en crecimiento",
     features: ["Oficios ilimitados", "Servicios ilimitados", "200 fotos", "Destacado en búsqueda", "Estadísticas", "Dominio propio"],
     cta: "Probar 14 días gratis",
     variant: "default" as const,
-    accent: "border-yellow-500/50",
   },
 ]
 
@@ -96,9 +92,15 @@ const STATS = [
   { value: "+30",   label: "Oficios disponibles",      icon: TrendingUp,  color: "text-violet-400" },
 ]
 
+function formatARS(amount: number) {
+  return new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS', maximumFractionDigits: 0 }).format(amount)
+}
+
 export default async function HomePage() {
   const supabase = await createServerSupabaseClient()
   const { data: { user } } = await supabase.auth.getUser()
+
+  const planPrices = fetchPlanPrices()
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
@@ -274,46 +276,59 @@ export default async function HomePage() {
             <p className="text-muted-foreground">Comenzá gratis, escalá cuando lo necesités</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-            {PLANS.map(plan => (
-              <Card
-                key={plan.name}
-                className={`bg-background transition-transform ${
-                  plan.highlighted
-                    ? `ring-2 ring-primary shadow-xl shadow-primary/15 scale-105`
-                    : "hover:-translate-y-1"
-                }`}
-              >
-                <CardContent className="pt-6">
-                  {plan.highlighted && (
-                    <div className="text-xs font-bold text-primary bg-primary/15 rounded-full px-3 py-1 mb-4 inline-block tracking-wide">
-                      ★ MÁS POPULAR
+            {PLAN_META.map(plan => {
+              const priceData = plan.key !== 'FREE' ? planPrices?.[plan.key as 'PRO' | 'PREMIUM'] : null
+              const monthlyLabel = plan.key === 'FREE'
+                ? '$0'
+                : priceData ? formatARS(priceData.monthly) : '—'
+              const annualLabel = priceData ? formatARS(priceData.annual) + '/año' : null
+
+              return (
+                <Card
+                  key={plan.name}
+                  className={`bg-background transition-transform ${
+                    plan.highlighted
+                      ? `ring-2 ring-primary shadow-xl shadow-primary/15 scale-105`
+                      : "hover:-translate-y-1"
+                  }`}
+                >
+                  <CardContent className="pt-6">
+                    {plan.highlighted && (
+                      <div className="text-xs font-bold text-primary bg-primary/15 rounded-full px-3 py-1 mb-4 inline-block tracking-wide">
+                        ★ MÁS POPULAR
+                      </div>
+                    )}
+                    {plan.name === "Premium" && (
+                      <div className="text-xs font-bold text-yellow-400 bg-yellow-400/10 rounded-full px-3 py-1 mb-4 inline-block tracking-wide border border-yellow-400/20">
+                        👑 PREMIUM
+                      </div>
+                    )}
+                    <h3 className="text-xl font-bold">{plan.name}</h3>
+                    <div className="flex items-baseline gap-1 my-3">
+                      <span className="text-4xl font-extrabold">{monthlyLabel}</span>
+                      {plan.key !== 'FREE' && <span className="text-muted-foreground text-sm">/mes</span>}
                     </div>
-                  )}
-                  {plan.name === "Premium" && (
-                    <div className="text-xs font-bold text-yellow-400 bg-yellow-400/10 rounded-full px-3 py-1 mb-4 inline-block tracking-wide border border-yellow-400/20">
-                      👑 PREMIUM
-                    </div>
-                  )}
-                  <h3 className="text-xl font-bold">{plan.name}</h3>
-                  <div className="flex items-baseline gap-1 my-3">
-                    <span className="text-4xl font-extrabold">{plan.price}</span>
-                    {plan.period && <span className="text-muted-foreground text-sm">{plan.period}</span>}
-                  </div>
-                  <p className="text-sm text-muted-foreground mb-5">{plan.desc}</p>
-                  <ul className="space-y-2.5 mb-6">
-                    {plan.features.map(f => (
-                      <li key={f} className="flex items-center gap-2 text-sm">
-                        <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
-                        {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <Button variant={plan.variant} className="w-full" asChild>
-                    <Link href="/auth/register">{plan.cta}</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
+                    {annualLabel && (
+                      <p className="text-xs text-green-600 font-medium -mt-2 mb-3">
+                        o {annualLabel} <span className="text-muted-foreground font-normal">(2 meses gratis)</span>
+                      </p>
+                    )}
+                    <p className="text-sm text-muted-foreground mb-5">{plan.desc}</p>
+                    <ul className="space-y-2.5 mb-6">
+                      {plan.features.map(f => (
+                        <li key={f} className="flex items-center gap-2 text-sm">
+                          <CheckCircle2 className="w-4 h-4 text-primary shrink-0" />
+                          {f}
+                        </li>
+                      ))}
+                    </ul>
+                    <Button variant={plan.variant} className="w-full" asChild>
+                      <Link href="/auth/register">{plan.cta}</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              )
+            })}
           </div>
         </div>
       </section>

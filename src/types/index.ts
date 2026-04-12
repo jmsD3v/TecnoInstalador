@@ -51,6 +51,8 @@ export interface Installer {
   avg_rating: number
   created_at: string
   updated_at: string
+  subscription_id?: string
+  plan_expires_at?: string
   // Relations
   installer_trades?: InstallerTrade[]
   installer_services?: InstallerService[]
@@ -138,6 +140,22 @@ export interface Stats {
   date: string
   profile_views: number
   whatsapp_clicks: number
+}
+
+export type SubscriptionStatus = 'pending' | 'authorized' | 'paused' | 'cancelled'
+export type BillingPeriod = 'monthly' | 'annual'
+
+export interface Subscription {
+  id: string
+  installer_id: string
+  mp_preapproval_id: string
+  mp_plan_id: string
+  plan: 'PRO' | 'PREMIUM'
+  billing_period: BillingPeriod
+  status: SubscriptionStatus
+  next_payment_date?: string
+  created_at: string
+  updated_at: string
 }
 
 // ─────────────────────────────────────────────

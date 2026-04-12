@@ -4,9 +4,6 @@ import "./globals.css"
 import { ToastContextProvider } from "@/components/ui/toast"
 import { ThemeProvider } from "@/components/theme/theme-provider"
 
-//Monaspace Krypton — descargá desde https://monaspace.githubnext.com/
-//Ponés los .woff2 en src/app/fonts/ y descomentás esta sección:
-
 const monaspaceKrypton = localFont({
   src: [
     { path: './fonts/MonaspaceKrypton-Regular.woff2', weight: '400', style: 'normal' },

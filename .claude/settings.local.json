@@ -10,7 +10,16 @@
       "Bash(pnpm install:*)",
       "WebFetch(domain:theme-toggle.rdsx.dev)",
       "Bash(pnpm exec:*)",
-      "Bash(node -e ':*)"
+      "Bash(node -e ':*)",
+      "Bash(curl -s \"https://apis.datos.gob.ar/georef/api/localidades?nombre=Res&provincia=22&max=10&campos=nombre,provincia.nombre\")",
+      "Bash(python -m json.tool)",
+      "Bash(curl -s \"https://apis.datos.gob.ar/georef/api/localidades?nombre=Res&max=10&campos=nombre,provincia.nombre\")",
+      "Bash(curl -s \"https://apis.datos.gob.ar/georef/api/localidades?nombre=Resis&max=10&campos=nombre,provincia.nombre\")",
+      "Bash(curl -s \"https://apis.datos.gob.ar/georef/api/localidades?nombre=Charat&max=5&campos=nombre,provincia.nombre\")",
+      "Bash(curl -s \"https://apis.datos.gob.ar/georef/api/localidades?nombre=Resi&max=10&campos=nombre,provincia.nombre\")",
+      "Bash(curl -s \"https://apis.datos.gob.ar/georef/api/localidades?nombre=Re&max=10&campos=nombre,provincia.nombre\")",
+      "Bash(find:*)",
+      "Bash(pnpm add:*)"
     ]
   }
 }

@@ -137,11 +137,5 @@ export const PLAN_LABELS: Record<PlanType, string> = {
   PREMIUM: 'Premium',
 }
 
-export const PLAN_PRICES: Record<PlanType, string> = {
-  FREE: '$0',
-  PRO: '$4.999/mes',     // Ajustar a precio real
-  PREMIUM: '$9.999/mes', // Ajustar a precio real
-}
-
 // Re-export for convenience
 export { PLAN_LIMITS } from '@/types'

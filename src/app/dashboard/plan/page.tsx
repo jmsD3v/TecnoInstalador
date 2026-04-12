@@ -1,85 +1,114 @@
 'use client'
 
 import { useState, useEffect } from "react"
+import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { createClient } from "@/lib/supabase/client"
 import { useToast } from "@/components/ui/toast"
-import { Installer, PlanType, PLAN_LIMITS } from "@/types"
-import { getEffectivePlan, PLAN_LABELS, PLAN_PRICES } from "@/lib/plans"
-import { CheckCircle2, Crown, Zap, Lock } from "lucide-react"
+import { Installer, PlanType, Subscription } from "@/types"
+import { PLAN_LABELS } from "@/lib/plans"
+import type { PlanPrices } from "@/lib/mp-plans"
+import { Crown, Zap } from "lucide-react"
+import { PricingCards } from "@/components/pricing/pricing-cards"
 
-const PLAN_FEATURES: Record<PlanType, string[]> = {
-  FREE: [
-    '1 oficio',
-    '3 servicios',
-    '5 fotos en galería',
-    'Perfil público',
-    'Reseñas verificadas',
-    'Botón WhatsApp',
-    'Aparece en búsqueda',
-  ],
-  PRO: [
-    '3 oficios',
-    '10 servicios',
-    '30 fotos en galería',
-    'Perfil público',
-    'Reseñas verificadas',
-    'Botón WhatsApp',
-    'Presupuestos en la app',
-    'Mejor posición en búsqueda',
-  ],
-  PREMIUM: [
-    'Oficios ilimitados',
-    'Servicios ilimitados',
-    '200 fotos en galería',
-    'Perfil público',
-    'Reseñas verificadas',
-    'Botón WhatsApp',
-    'Presupuestos en la app',
-    'Posición destacada en búsqueda',
-    'Badge Premium',
-    'Estadísticas de visitas',
-    'Dominio personalizado',
-  ],
-}
 
 export default function PlanPage() {
   const supabase = createClient()
   const toast = useToast()
+  const router = useRouter()
+  const searchParams = useSearchParams()
 
   const [installer, setInstaller] = useState<Installer | null>(null)
+  const [subscription, setSubscription] = useState<Subscription | null>(null)
+  const [prices, setPrices] = useState<PlanPrices | null>(null)
   const [loading, setLoading] = useState(true)
+  const [subscribingTo, setSubscribingTo] = useState<PlanType | null>(null)
+  const [cancelling, setCancelling] = useState(false)
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false)
+
+  useEffect(() => {
+    const status = searchParams.get('status')
+    if (status === 'success') {
+      toast({ title: '¡Suscripción iniciada!', description: 'Tu plan se activará en minutos.', variant: 'success' })
+      router.replace('/dashboard/plan')
+    } else if (status === 'failure') {
+      toast({ title: 'Pago no completado', description: 'Podés intentarlo de nuevo cuando quieras.', variant: 'error' })
+      router.replace('/dashboard/plan')
+    }
+  }, [searchParams])
 
   useEffect(() => {
     const load = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
+      const [{ data: { user } }, pricesRes] = await Promise.all([
+        supabase.auth.getUser(),
+        fetch('/api/plans/prices'),
+      ])
       if (!user) return
-      const { data } = await supabase.from('installers').select('*').eq('user_id', user.id).single()
+      if (pricesRes.ok) setPrices(await pricesRes.json())
+      const { data } = await supabase
+        .from('installers')
+        .select('*, subscriptions(*)')
+        .eq('user_id', user.id)
+        .single()
       setInstaller(data)
+      const subs = (data as any)?.subscriptions
+      setSubscription(Array.isArray(subs) ? subs[0] ?? null : subs ?? null)
       setLoading(false)
     }
     load()
   }, [])
 
-  // STUB: Aquí iría la integración real con MercadoPago / Stripe
-  const handleUpgrade = (plan: PlanType) => {
-    toast({
-      title: 'Próximamente',
-      description: 'La integración de pagos estará disponible pronto. Contactanos por WhatsApp para activar tu plan.',
-      variant: 'warning',
-    })
-    // TODO: Redirigir a checkout de MercadoPago o Stripe
-    // const checkoutUrl = await createCheckoutSession(plan)
-    // router.push(checkoutUrl)
+  const handleSubscribe = async (plan: 'PRO' | 'PREMIUM', period: 'monthly' | 'annual') => {
+    setSubscribingTo(plan)
+    try {
+      const res = await fetch('/api/payments/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ plan, period }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        toast({ title: data.error ?? 'Error', variant: 'error' })
+        return
+      }
+      window.location.href = data.init_point
+    } catch {
+      toast({ title: 'Error de conexión. Intentá de nuevo.', variant: 'error' })
+    } finally {
+      setSubscribingTo(null)
+    }
   }
 
-  if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>
+  const handleCancel = async () => {
+    setCancelling(true)
+    try {
+      const res = await fetch('/api/payments/cancel', { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok) {
+        toast({ title: data.error ?? 'Error al cancelar', variant: 'error' })
+        return
+      }
+      toast({ title: 'Suscripción cancelada', description: 'Tu plan bajó a Gratuito.', variant: 'success' })
+      setInstaller(prev => prev ? { ...prev, plan: 'FREE', subscription_id: undefined } : prev)
+      setSubscription(null)
+      setShowCancelConfirm(false)
+    } catch {
+      toast({ title: 'Error de conexión. Intentá de nuevo.', variant: 'error' })
+    } finally {
+      setCancelling(false)
+    }
+  }
+
+  if (loading) return (
+    <div className="flex items-center justify-center h-64">
+      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
   if (!installer) return null
 
-  const effectivePlan = getEffectivePlan(installer)
   const isTrialActive = installer.trial_ends_at && new Date(installer.trial_ends_at) > new Date()
+  const hasActiveSub = subscription && ['authorized', 'pending'].includes(subscription.status)
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
@@ -88,7 +117,7 @@ export default function PlanPage() {
         <p className="text-muted-foreground text-sm mt-1">Gestioná tu suscripción</p>
       </div>
 
-      {/* Current plan */}
+      {/* Current plan status */}
       <Card className="border-primary/30 bg-primary/5">
         <CardContent className="p-4 flex items-center justify-between flex-wrap gap-3">
           <div>
@@ -99,100 +128,64 @@ export default function PlanPage() {
                 Trial activo — vence el {new Date(installer.trial_ends_at!).toLocaleDateString('es-AR')}
               </p>
             )}
+            {hasActiveSub && subscription?.next_payment_date && (
+              <p className="text-xs text-muted-foreground mt-1">
+                Próximo cobro: {new Date(subscription.next_payment_date).toLocaleDateString('es-AR')}
+              </p>
+            )}
           </div>
-          {installer.plan === 'PREMIUM'
-            ? <Badge variant="premium"><Crown className="w-3 h-3 mr-1" />Premium</Badge>
-            : installer.plan === 'PRO'
-            ? <Badge variant="pro"><Zap className="w-3 h-3 mr-1" />Pro</Badge>
-            : <Badge variant="free">Gratis</Badge>
-          }
-        </CardContent>
-      </Card>
-
-      {/* Usage */}
-      <Card>
-        <CardHeader><CardTitle className="text-base">Uso actual</CardTitle></CardHeader>
-        <CardContent className="space-y-3">
-          {[
-            { label: 'Oficios', max: PLAN_LIMITS[effectivePlan].max_trades },
-            { label: 'Servicios', max: PLAN_LIMITS[effectivePlan].max_services },
-            { label: 'Fotos', max: PLAN_LIMITS[effectivePlan].max_gallery },
-          ].map(item => (
-            <div key={item.label} className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground">{item.label}</span>
-              <span className="font-medium">
-                {item.max >= 999 ? 'Ilimitado' : `Hasta ${item.max}`}
-              </span>
-            </div>
-          ))}
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Presupuestos</span>
-            <span className="font-medium">
-              {PLAN_LIMITS[effectivePlan].quotes ? '✓ Incluido' : <span className="text-red-500">No incluido</span>}
-            </span>
-          </div>
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-muted-foreground">Destaque en búsqueda</span>
-            <span className="font-medium">
-              {PLAN_LIMITS[effectivePlan].featured ? '✓ Destacado' : 'Sin destacar'}
-            </span>
+          <div className="flex flex-col items-end gap-2">
+            {installer.plan === 'PREMIUM'
+              ? <Badge variant="premium"><Crown className="w-3 h-3 mr-1" />Premium</Badge>
+              : installer.plan === 'PRO'
+              ? <Badge variant="pro"><Zap className="w-3 h-3 mr-1" />Pro</Badge>
+              : <Badge variant="free">Gratis</Badge>
+            }
+            {hasActiveSub && !showCancelConfirm && (
+              <button
+                className="text-xs text-destructive hover:underline"
+                onClick={() => setShowCancelConfirm(true)}
+              >
+                Cancelar suscripción
+              </button>
+            )}
+            {showCancelConfirm && (
+              <div className="flex items-center gap-2 text-xs">
+                <span className="text-muted-foreground">¿Confirmar cancelación?</span>
+                <Button size="sm" variant="outline" onClick={() => setShowCancelConfirm(false)}>No</Button>
+                <Button
+                  size="sm"
+                  className="bg-destructive text-white hover:bg-destructive/90"
+                  loading={cancelling}
+                  onClick={handleCancel}
+                >
+                  Cancelar
+                </Button>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>
 
-      {/* Plans comparison */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {(['FREE', 'PRO', 'PREMIUM'] as PlanType[]).map(plan => {
-          const isCurrent = installer.plan === plan
-          const isDowngrade = plan === 'FREE' && installer.plan !== 'FREE'
+      {/* FREE upsell banner */}
+      {installer.plan === 'FREE' && (
+        <div className="flex items-start gap-3 p-4 rounded-xl border border-primary/30 bg-primary/5">
+          <Zap className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+          <div>
+            <p className="text-sm font-semibold">Desbloqueá presupuestos, más fotos y mejor posición en búsqueda</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Con PRO aparecés más arriba y mandás presupuestos desde la app.</p>
+          </div>
+        </div>
+      )}
 
-          return (
-            <Card
-              key={plan}
-              className={isCurrent ? 'ring-2 ring-primary' : ''}
-            >
-              <CardContent className="pt-6 pb-4">
-                <div className="flex items-center justify-between mb-1">
-                  <h3 className="font-bold text-lg">{PLAN_LABELS[plan]}</h3>
-                  {plan === 'PRO' && <Zap className="w-4 h-4 text-blue-500" />}
-                  {plan === 'PREMIUM' && <Crown className="w-4 h-4 text-yellow-500" />}
-                </div>
-                <p className="text-2xl font-extrabold mb-4">
-                  {PLAN_PRICES[plan]}
-                  {plan !== 'FREE' && <span className="text-sm font-normal text-muted-foreground"></span>}
-                </p>
-
-                <ul className="space-y-1.5 mb-5">
-                  {PLAN_FEATURES[plan].map(f => (
-                    <li key={f} className="flex items-start gap-2 text-xs">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-green-500 mt-0.5 shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-
-                {isCurrent ? (
-                  <Button variant="outline" className="w-full" disabled>Plan actual</Button>
-                ) : (
-                  <Button
-                    className="w-full"
-                    variant={plan === 'FREE' ? 'outline' : 'default'}
-                    onClick={() => handleUpgrade(plan)}
-                  >
-                    {plan === 'FREE' ? 'Bajar a Gratis' : `Subir a ${PLAN_LABELS[plan]}`}
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-          )
-        })}
-      </div>
-
-      {/* Payment note */}
-      <p className="text-xs text-center text-muted-foreground">
-        Los pagos se procesarán vía MercadoPago. Próximamente disponible.
-        {/* TODO: integrar MercadoPago / Stripe */}
-      </p>
+      <PricingCards
+        prices={prices}
+        mode="dashboard"
+        currentPlan={installer.plan}
+        hasActiveSub={hasActiveSub}
+        subscribingTo={subscribingTo}
+        onSubscribe={handleSubscribe}
+      />
     </div>
   )
 }

@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { PlanBadge } from "@/components/ui/plan-badge"
 import { StarRating } from "@/components/ui/avatar"
-import { Star, Eye, MessageCircle, FileText, ChevronRight, AlertCircle } from "lucide-react"
+import { Star, Eye, MessageCircle, FileText, ChevronRight, AlertCircle, Zap } from "lucide-react"
 import { getEffectivePlan, PLAN_LABELS } from "@/lib/plans"
 
 export default async function DashboardPage() {
@@ -67,6 +67,20 @@ export default async function DashboardPage() {
           </div>
           <Button size="sm" variant="outline" asChild>
             <Link href="/dashboard/profile">Completar</Link>
+          </Button>
+        </div>
+      )}
+
+      {/* FREE plan upsell */}
+      {installer.plan === 'FREE' && !profileIncomplete && (
+        <div className="flex items-center gap-3 p-4 rounded-xl border border-primary/20 bg-primary/5">
+          <Zap className="w-5 h-5 text-primary shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold">Subí a PRO y conseguí más clientes</p>
+            <p className="text-xs text-muted-foreground">Presupuestos, más fotos, mejor posición en búsqueda.</p>
+          </div>
+          <Button size="sm" asChild className="shrink-0">
+            <Link href="/dashboard/plan">Ver planes</Link>
           </Button>
         </div>
       )}

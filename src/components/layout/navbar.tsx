@@ -27,7 +27,7 @@ export function Navbar({ user }: NavbarProps) {
 
   const navLinks = [
     { href: '/buscar', label: 'Buscar instaladores' },
-    { href: '/precios', label: 'Precios' },
+    { href: '/planes', label: 'Planes' },
   ]
 
   return (
