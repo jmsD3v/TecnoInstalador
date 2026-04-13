@@ -16,18 +16,14 @@ function formatARS(n: number) {
 
 const FEATURES: Record<PlanType, string[]> = {
   FREE: [
-    '1 oficio registrado',
-    '3 servicios publicados',
-    '5 fotos en galería',
+    '1 oficio · 3 servicios · 5 fotos',
     'Perfil público visible',
     'Reseñas verificadas',
     'Botón WhatsApp directo',
     'Aparecés en búsquedas',
   ],
   PRO: [
-    '3 oficios registrados',
-    '10 servicios publicados',
-    '30 fotos en galería',
+    '3 oficios · 10 servicios · 30 fotos',
     'Perfil público verificado',
     'Reseñas verificadas',
     'Botón WhatsApp directo',
@@ -35,16 +31,11 @@ const FEATURES: Record<PlanType, string[]> = {
     'Mejor posición en búsqueda',
   ],
   PREMIUM: [
-    'Oficios ilimitados',
-    'Servicios ilimitados',
-    '200 fotos en galería',
-    'Perfil público verificado',
-    'Reseñas verificadas',
-    'Botón WhatsApp directo',
-    'Presupuestos desde la app',
+    'Oficios · servicios · fotos ilimitados',
     'Posición destacada en búsqueda',
-    'Badge Premium exclusivo',
+    'Presupuestos desde la app',
     'Estadísticas de visitas',
+    'Badge Premium exclusivo',
     'Dominio personalizado',
   ],
 }
@@ -115,7 +106,7 @@ export function PricingCards({
       </div>
 
       {/* Cards grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch mt-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start mt-5">
         {plans.map(plan => {
           const isFeatured  = plan === 'PRO'
           const isPremium   = plan === 'PREMIUM'
