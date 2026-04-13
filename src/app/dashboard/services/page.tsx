@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { createClient } from "@/lib/supabase/client"
 import { useToast } from "@/components/ui/toast"
 import { Trade, Service, Installer } from "@/types"
+import { Skeleton } from "@/components/ui/skeleton"
 import { canAddTrade, canAddService, getEffectivePlan, PLAN_LIMITS } from "@/lib/plans"
 import { Plus, X, Lock } from "lucide-react"
 import Link from "next/link"
@@ -116,8 +117,17 @@ export default function ServicesPage() {
   }
 
   if (loading) return (
-    <div className="flex items-center justify-center h-64">
-      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+    <div className="max-w-2xl mx-auto space-y-6">
+      <div className="space-y-2">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-4 w-64" />
+      </div>
+      <div className="flex gap-2 flex-wrap">
+        {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-9 w-28 rounded-full" />)}
+      </div>
+      <div className="space-y-3">
+        {Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-14 w-full rounded-xl" />)}
+      </div>
     </div>
   )
 

@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge"
 import { createClient } from "@/lib/supabase/client"
 import { useToast } from "@/components/ui/toast"
 import { Quote, QuoteItem, Installer } from "@/types"
+import { Skeleton } from "@/components/ui/skeleton"
 import { canUseQuotes, getEffectivePlan } from "@/lib/plans"
 import { formatCurrency, buildQuoteWhatsAppMessage } from "@/lib/utils"
 import { Plus, Trash2, Lock, MessageCircle, FileText, X } from "lucide-react"
@@ -133,7 +134,17 @@ export default function QuotesPage() {
     setQuotes(prev => prev.map(q => q.id === quote.id ? { ...q, status: 'SENT' } : q))
   }
 
-  if (loading) return <div className="flex items-center justify-center h-64"><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>
+  if (loading) return (
+    <div className="max-w-3xl mx-auto space-y-6">
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-8 w-40" />
+        <Skeleton className="h-10 w-36 rounded-lg" />
+      </div>
+      <div className="space-y-3">
+        {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-20 w-full rounded-xl" />)}
+      </div>
+    </div>
+  )
 
   const effectivePlan = installer ? getEffectivePlan(installer) : 'FREE'
   const { allowed } = canUseQuotes(installer ?? { plan: 'FREE' as const, trial_ends_at: undefined })
