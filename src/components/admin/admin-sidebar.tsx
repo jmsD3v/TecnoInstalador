@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutDashboard, Users, Star, CreditCard, LogOut, Wrench } from 'lucide-react'
+import { LayoutDashboard, Users, Star, CreditCard, LogOut, Wrench, Home, ChevronLeft } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 
@@ -56,8 +56,22 @@ export function AdminSidebar({ adminEmail }: { adminEmail: string }) {
         })}
       </nav>
 
-      <div className="p-4 border-t border-slate-700">
-        <p className="text-xs text-slate-500 mb-2 truncate">{adminEmail}</p>
+      <div className="p-4 border-t border-slate-700 space-y-2">
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-2 text-xs text-slate-400 hover:text-slate-100 transition-colors"
+        >
+          <ChevronLeft className="w-3.5 h-3.5" />
+          Mi dashboard
+        </Link>
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-xs text-slate-400 hover:text-slate-100 transition-colors"
+        >
+          <Home className="w-3.5 h-3.5" />
+          Ir al inicio
+        </Link>
+        <p className="text-xs text-slate-500 truncate pt-1">{adminEmail}</p>
         <button
           onClick={handleSignOut}
           className="flex items-center gap-2 text-xs text-slate-400 hover:text-slate-100 transition-colors"
