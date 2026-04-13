@@ -10,6 +10,7 @@ import { COLOR_PALETTES } from "@/types"
 import { buildContactMessage } from "@/lib/utils"
 import Link from "next/link"
 import { Navbar } from "@/components/layout/navbar"
+import { ProfileAnimated } from "@/components/installer/profile-animated"
 
 interface Props {
   params: Promise<{ slug: string }>
@@ -107,8 +108,9 @@ export default async function InstallerProfilePage({ params }: Props) {
         Avatar is absolute -top-12 (48px above card top) → center at cover/card boundary.
         Card pt-14 (56px) = space for the bottom half of the avatar + breathing room.
       */}
+      <ProfileAnimated>
       <div className="container max-w-2xl mx-auto px-4 pb-32 relative z-10">
-        <div className="relative">
+        <div className="relative animate-in">
 
           {/* Avatar — positioned straddling cover and card */}
           <div className="absolute -top-12 left-5 z-20">
@@ -239,7 +241,7 @@ export default async function InstallerProfilePage({ params }: Props) {
 
         {/* ── REVIEWS ──────────────────────────────── */}
         {reviews.length > 0 && (
-          <div className="mt-6">
+          <div className="mt-6 animate-in">
             <div className="flex items-center gap-2 mb-4">
               <h2 className="text-lg font-bold">Reseñas</h2>
               <span className="text-sm text-muted-foreground">({reviews.length})</span>
@@ -258,6 +260,7 @@ export default async function InstallerProfilePage({ params }: Props) {
           </div>
         )}
       </div>{/* end container */}
+      </ProfileAnimated>
     </div>
   )
 }

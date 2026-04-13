@@ -1,7 +1,7 @@
 import { Suspense } from "react"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { Navbar } from "@/components/layout/navbar"
-import { InstallerCard } from "@/components/marketplace/installer-card"
+import { ResultsAnimated } from "@/components/marketplace/results-animated"
 import { sortInstallersByPlan } from "@/lib/plans"
 import { Search } from "lucide-react"
 import { MarketplaceFilters } from "./filters"
@@ -60,11 +60,7 @@ async function Results({ searchParams }: { searchParams: SearchParams }) {
       <p className="text-sm text-muted-foreground mb-4">
         {sorted.length} resultado(s) en <strong>{location}</strong>
       </p>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {sorted.map(installer => (
-          <InstallerCard key={installer.id} installer={installer as any} />
-        ))}
-      </div>
+      <ResultsAnimated installers={sorted as any} />
     </div>
   )
 }
