@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { Card, CardContent } from "@/components/ui/card"
 import { createClient } from "@/lib/supabase/client"
 import { useToast } from "@/components/ui/toast"
 import { Installer, PlanType, Subscription } from "@/types"
@@ -108,7 +109,7 @@ export default function PlanPage() {
   if (!installer) return null
 
   const isTrialActive = installer.trial_ends_at && new Date(installer.trial_ends_at) > new Date()
-  const hasActiveSub = subscription && ['authorized', 'pending'].includes(subscription.status)
+  const hasActiveSub = !!subscription && ['authorized', 'pending'].includes(subscription.status)
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
