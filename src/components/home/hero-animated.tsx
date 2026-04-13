@@ -1,7 +1,6 @@
 'use client'
 
-import { useRef } from 'react'
-import { useGSAP } from '@gsap/react'
+import { useRef, useLayoutEffect } from 'react'
 import { gsap } from '@/lib/gsap'
 import Link from 'next/link'
 import { Zap, ArrowRight, Star } from 'lucide-react'
@@ -14,15 +13,18 @@ interface HeroAnimatedProps {
 export function HeroAnimated({ isLoggedIn }: HeroAnimatedProps) {
   const containerRef = useRef<HTMLDivElement>(null)
 
-  useGSAP(() => {
-    const tl = gsap.timeline({ defaults: { ease: 'power2.out' } })
-    tl
-      .from('.hero-badge', { opacity: 0, y: -20, duration: 0.5 })
-      .from('.hero-title', { opacity: 0, y: 30, duration: 0.6 }, '-=0.2')
-      .from('.hero-subtitle', { opacity: 0, y: 20, duration: 0.5 }, '-=0.3')
-      .from('.hero-cta', { opacity: 0, y: 20, duration: 0.4, stagger: 0.1 }, '-=0.2')
-      .from('.hero-social', { opacity: 0, duration: 0.4 }, '-=0.1')
-  }, { scope: containerRef })
+  useLayoutEffect(() => {
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: 'power2.out' } })
+      tl
+        .from('.hero-badge', { opacity: 0, y: -20, duration: 0.5 })
+        .from('.hero-title', { opacity: 0, y: 30, duration: 0.6 }, '-=0.2')
+        .from('.hero-subtitle', { opacity: 0, y: 20, duration: 0.5 }, '-=0.3')
+        .from('.hero-cta', { opacity: 0, y: 20, duration: 0.4, stagger: 0.1 }, '-=0.2')
+        .from('.hero-social', { opacity: 0, duration: 0.4 }, '-=0.1')
+    }, containerRef)
+    return () => ctx.revert()
+  }, [])
 
   return (
     <div ref={containerRef} className="relative container mx-auto px-4 py-20 md:py-36">
