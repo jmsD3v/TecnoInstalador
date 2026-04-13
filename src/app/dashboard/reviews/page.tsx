@@ -13,8 +13,9 @@ import { StarRating } from "@/components/ui/avatar"
 import { MessageSquarePlus, Star } from "lucide-react"
 import Link from "next/link"
 
+const supabase = createClient()
+
 export default function ReviewsPage() {
-  const supabase = createClient()
   const toast = useToast()
 
   const [loading, setLoading] = useState(true)
@@ -25,6 +26,8 @@ export default function ReviewsPage() {
   const [savingReply, setSavingReply] = useState(false)
 
   useEffect(() => {
+    let cleanup: (() => void) | undefined
+
     const load = async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
@@ -46,8 +49,25 @@ export default function ReviewsPage() {
 
       setReviews(data ?? [])
       setLoading(false)
+
+      // Realtime: new reviews appear automatically
+      const channel = supabase
+        .channel(`reviews:${inst.id}`)
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'reviews', filter: `installer_id=eq.${inst.id}` },
+          (payload) => {
+            setReviews(prev => [payload.new as Review, ...prev])
+          }
+        )
+        .subscribe()
+
+      cleanup = () => { supabase.removeChannel(channel) }
     }
+
     load()
+
+    return () => { cleanup?.() }
   }, [])
 
   const avgRating = reviews.length
