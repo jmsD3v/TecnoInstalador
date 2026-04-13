@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
-import { ReviewToggle } from '@/components/admin/review-toggle'
+import { ReviewsAccordion, type InstallerGroup } from '@/components/admin/reviews-accordion'
 
 type Filter = 'all' | 'public' | 'hidden'
 
@@ -16,7 +16,7 @@ async function getReviews(filter: Filter, search?: string) {
     .select('id, rating, comentario, is_public, created_at, installer_id, installers!inner(id, nombre, apellido, nombre_comercial)')
     .is('deleted_at', null)
     .order('created_at', { ascending: false })
-    .limit(200)
+    .limit(500)
 
   if (filter === 'public') query = query.eq('is_public', true)
   if (filter === 'hidden') query = query.eq('is_public', false)
@@ -31,6 +31,31 @@ async function getReviews(filter: Filter, search?: string) {
   return data ?? []
 }
 
+function groupByInstaller(reviews: Awaited<ReturnType<typeof getReviews>>): InstallerGroup[] {
+  const map = new Map<string, InstallerGroup>()
+
+  for (const r of reviews) {
+    const inst = (r as any).installers
+    const installerId: string = inst?.id ?? r.installer_id
+    const fullName = `${inst?.nombre ?? ''} ${inst?.apellido ?? ''}`.trim()
+    const installerName: string = inst?.nombre_comercial ?? fullName ?? '—'
+
+    if (!map.has(installerId)) {
+      map.set(installerId, { installerId, installerName, reviews: [] })
+    }
+    map.get(installerId)!.reviews.push({
+      id: r.id,
+      rating: r.rating,
+      comentario: r.comentario ?? null,
+      is_public: r.is_public,
+      created_at: r.created_at,
+    })
+  }
+
+  // Sort groups by most reviews first
+  return Array.from(map.values()).sort((a, b) => b.reviews.length - a.reviews.length)
+}
+
 const FILTERS: { key: Filter; label: string }[] = [
   { key: 'all', label: 'Todas' },
   { key: 'public', label: 'Aprobadas' },
@@ -43,12 +68,15 @@ export default async function AdminReviewsPage({ searchParams }: Props) {
   const { filter: rawFilter, q } = await searchParams
   const filter: Filter = (['all', 'public', 'hidden'].includes(rawFilter ?? '') ? rawFilter as Filter : 'all')
   const reviews = await getReviews(filter, q)
+  const groups = groupByInstaller(reviews)
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold text-slate-100">Reseñas</h1>
-        <span className="text-slate-400 text-sm">{reviews.length} resultados</span>
+        <span className="text-slate-400 text-sm">
+          {reviews.length} reseña{reviews.length !== 1 ? 's' : ''} · {groups.length} instalador{groups.length !== 1 ? 'es' : ''}
+        </span>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-3">
@@ -79,52 +107,7 @@ export default async function AdminReviewsPage({ searchParams }: Props) {
         </form>
       </div>
 
-      <div className="bg-slate-800 rounded-xl border border-slate-700 overflow-hidden">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-slate-700">
-              <th className="text-left p-3 text-slate-400 font-medium">Instalador</th>
-              <th className="text-left p-3 text-slate-400 font-medium">Rating</th>
-              <th className="text-left p-3 text-slate-400 font-medium hidden md:table-cell">Comentario</th>
-              <th className="text-left p-3 text-slate-400 font-medium">Estado</th>
-              <th className="p-3 text-slate-400 font-medium">Acción</th>
-            </tr>
-          </thead>
-          <tbody>
-            {reviews.length === 0 && (
-              <tr>
-                <td colSpan={5} className="p-8 text-center text-slate-500">Sin resultados</td>
-              </tr>
-            )}
-            {reviews.map(r => {
-              const inst = (r as any).installers
-              const name = inst?.nombre_comercial ?? `${inst?.nombre ?? ''} ${inst?.apellido ?? ''}`.trim()
-              return (
-                <tr key={r.id} className="border-b border-slate-700/50 hover:bg-slate-700/30 transition-colors">
-                  <td className="p-3 text-slate-200 font-medium">{name || '—'}</td>
-                  <td className="p-3 text-yellow-400 font-bold">{'★'.repeat(r.rating)}</td>
-                  <td className="p-3 text-slate-400 hidden md:table-cell max-w-xs truncate">
-                    {r.comentario ?? '—'}
-                  </td>
-                  <td className="p-3">
-                    <span className={cn(
-                      'text-xs font-semibold px-2 py-0.5 rounded-full',
-                      r.is_public
-                        ? 'bg-green-900/50 text-green-400'
-                        : 'bg-red-900/50 text-red-400'
-                    )}>
-                      {r.is_public ? 'Aprobada' : 'Oculta'}
-                    </span>
-                  </td>
-                  <td className="p-3 text-center">
-                    <ReviewToggle reviewId={r.id} isPublic={r.is_public} />
-                  </td>
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
-      </div>
+      <ReviewsAccordion groups={groups} />
     </div>
   )
 }
