@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/toast"
 import { GalleryItem, Installer } from "@/types"
 import { canAddGalleryItem, getEffectivePlan, PLAN_LIMITS } from "@/lib/plans"
 import { Upload, Trash2, Lock, Image } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
 
 export default function GalleryPage() {
@@ -108,8 +109,19 @@ export default function GalleryPage() {
   }
 
   if (loading) return (
-    <div className="flex items-center justify-center h-64">
-      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+    <div className="max-w-3xl mx-auto space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-24" />
+        </div>
+        <Skeleton className="h-10 w-32 rounded-lg" />
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <Skeleton key={i} className="aspect-square rounded-xl" />
+        ))}
+      </div>
     </div>
   )
 

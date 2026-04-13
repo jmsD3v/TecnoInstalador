@@ -10,6 +10,7 @@ import { COLOR_PALETTES, ColorPalette } from "@/types"
 import { InstallerAvatar } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 import { Check, Camera, X } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function ProfilePage() {
   const supabase = createClient()
@@ -237,8 +238,14 @@ export default function ProfilePage() {
   }
 
   if (loading) return (
-    <div className="flex items-center justify-center h-64">
-      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+    <div className="max-w-2xl mx-auto space-y-6">
+      <Skeleton className="h-8 w-40" />
+      <Skeleton className="h-4 w-56" />
+      <Skeleton className="h-48 w-full rounded-xl" />
+      <div className="grid grid-cols-2 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-10 rounded-lg" />)}
+      </div>
+      <Skeleton className="h-24 w-full rounded-xl" />
     </div>
   )
 
