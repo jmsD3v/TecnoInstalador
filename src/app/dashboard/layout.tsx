@@ -15,7 +15,7 @@ export default async function DashboardLayout({
 
   const { data: installer } = await supabase
     .from('installers')
-    .select('plan, trial_ends_at, url_slug')
+    .select('plan, trial_ends_at, url_slug, onboarding_completed')
     .eq('user_id', user.id)
     .single()
 
