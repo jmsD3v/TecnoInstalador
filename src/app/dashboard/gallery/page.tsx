@@ -2,17 +2,17 @@
 
 import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { createClient } from "@/lib/supabase/client"
 import { useToast } from "@/components/ui/toast"
 import { GalleryItem, Installer } from "@/types"
 import { canAddGalleryItem, getEffectivePlan, PLAN_LIMITS } from "@/lib/plans"
-import { Upload, Trash2, Lock, Image } from "lucide-react"
+import { Upload, Trash2, Lock, Image, Pencil } from "lucide-react"
 import { Skeleton } from "@/components/ui/skeleton"
 import Link from "next/link"
 
+const supabase = createClient()
+
 export default function GalleryPage() {
-  const supabase = createClient()
   const toast = useToast()
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -20,6 +20,8 @@ export default function GalleryPage() {
   const [uploading, setUploading] = useState(false)
   const [installer, setInstaller] = useState<Installer | null>(null)
   const [items, setItems] = useState<GalleryItem[]>([])
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [editingText, setEditingText] = useState("")
 
   useEffect(() => {
     load()
@@ -108,6 +110,19 @@ export default function GalleryPage() {
     }
   }
 
+  const handleSaveTitle = async (id: string) => {
+    const text = editingText.trim()
+    const { error } = await supabase
+      .from('gallery_items')
+      .update({ titulo: text || null })
+      .eq('id', id)
+
+    if (!error) {
+      setItems(prev => prev.map(i => i.id === id ? { ...i, titulo: text || undefined } : i))
+    }
+    setEditingId(null)
+  }
+
   if (loading) return (
     <div className="max-w-3xl mx-auto space-y-6">
       <div className="flex items-center justify-between">
@@ -181,22 +196,47 @@ export default function GalleryPage() {
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
           {items.map(item => (
-            <div key={item.id} className="relative group aspect-square rounded-xl overflow-hidden bg-muted">
-              <img
-                src={item.image_url}
-                alt={item.titulo ?? 'Trabajo'}
-                className="w-full h-full object-cover transition-transform group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <Button
-                  variant="destructive"
-                  size="icon"
-                  className="w-9 h-9"
-                  onClick={() => handleDelete(item)}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+            <div key={item.id} className="flex flex-col gap-1.5">
+              <div className="relative group aspect-square rounded-xl overflow-hidden bg-muted">
+                <img
+                  src={item.image_url}
+                  alt={item.titulo ?? 'Trabajo'}
+                  className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    className="w-9 h-9"
+                    onClick={() => handleDelete(item)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
+              {editingId === item.id ? (
+                <input
+                  autoFocus
+                  className="w-full text-xs px-2 py-1 rounded-lg border border-primary bg-background outline-none"
+                  placeholder="Ej: Cocina en Villa del Parque"
+                  maxLength={60}
+                  value={editingText}
+                  onChange={e => setEditingText(e.target.value)}
+                  onBlur={() => handleSaveTitle(item.id)}
+                  onKeyDown={e => {
+                    if (e.key === 'Enter') handleSaveTitle(item.id)
+                    if (e.key === 'Escape') setEditingId(null)
+                  }}
+                />
+              ) : (
+                <button
+                  className="text-left text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 px-1 truncate group/title"
+                  onClick={() => { setEditingId(item.id); setEditingText(item.titulo ?? '') }}
+                >
+                  <Pencil className="w-3 h-3 shrink-0 opacity-0 group-hover/title:opacity-60 transition-opacity" />
+                  <span className="truncate">{item.titulo || 'Agregar descripción...'}</span>
+                </button>
+              )}
             </div>
           ))}
 

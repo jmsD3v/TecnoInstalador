@@ -51,8 +51,9 @@ export default function ReviewsPage() {
       setLoading(false)
 
       // Realtime: new reviews appear automatically
+      // Use unique channel name to avoid StrictMode double-subscribe error
       const channel = supabase
-        .channel(`reviews:${inst.id}`)
+        .channel(`reviews:${inst.id}:${Date.now()}`)
         .on(
           'postgres_changes',
           { event: 'INSERT', schema: 'public', table: 'reviews', filter: `installer_id=eq.${inst.id}` },
