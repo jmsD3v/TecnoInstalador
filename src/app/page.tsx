@@ -10,6 +10,8 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Navbar } from "@/components/layout/navbar"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { fetchPlanPrices } from "@/lib/mp-plans"
+import { HeroAnimated } from '@/components/home/hero-animated'
+import { SectionAnimated } from '@/components/home/sections-animated'
 
 const TRADES = [
   { icon: Zap,         label: "Electricidad",    gradient: "from-yellow-400 to-amber-500",   shadow: "shadow-yellow-500/20" },
@@ -121,68 +123,13 @@ export default async function HomePage() {
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-violet-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-sky-500/5 rounded-full blur-3xl pointer-events-none" />
 
-        <div className="relative container mx-auto px-4 py-20 md:py-36">
-          <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 border border-primary/30 bg-primary/10 text-primary text-xs font-bold px-4 py-2 rounded-full mb-8 tracking-wider uppercase">
-              <Zap className="w-3.5 h-3.5" />
-              Plataforma para profesionales del oficio
-            </div>
-
-            <h1 className="text-5xl md:text-7xl font-extrabold leading-[1.05] tracking-tight mb-6">
-              Tu perfil<br />
-              <span className="bg-gradient-to-r from-orange-500 via-orange-400 to-yellow-400 bg-clip-text text-transparent">
-                profesional
-              </span><br />
-              en minutos
-            </h1>
-
-            <p className="text-lg md:text-xl text-muted-foreground max-w-xl mb-10 leading-relaxed">
-              Mostrá tus servicios,{" "}
-              <span className="text-emerald-400 font-semibold">recibí reseñas verificadas</span>{" "}
-              y conectá con nuevos clientes desde cualquier dispositivo.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button size="xl" asChild className="font-bold shadow-lg shadow-primary/25">
-                <Link href="/auth/register">
-                  Crear mi perfil gratis
-                  <ArrowRight className="w-5 h-5" />
-                </Link>
-              </Button>
-              <Button size="xl" variant="outline" asChild>
-                <Link href="/buscar">Ver instaladores</Link>
-              </Button>
-            </div>
-
-            {/* Social proof */}
-            <div className="flex items-center gap-6 mt-10 flex-wrap">
-              <div className="flex -space-x-2">
-                {[
-                  { bg: '#f97316', init: 'JM' },
-                  { bg: '#fb923c', init: 'CR' },
-                  { bg: '#3b82f6', init: 'MP' },
-                  { bg: '#8b5cf6', init: 'AL' },
-                ].map((a, i) => (
-                  <div key={i} className="w-8 h-8 rounded-full border-2 border-background flex items-center justify-center text-xs font-bold text-white" style={{ background: a.bg }}>
-                    {a.init}
-                  </div>
-                ))}
-              </div>
-              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                <div className="flex">
-                  {[1,2,3,4,5].map(i => <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />)}
-                </div>
-                <span><span className="text-foreground font-semibold">+500</span> profesionales activos</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <HeroAnimated isLoggedIn={!!user} />
       </section>
 
       {/* ── STATS ────────────────────────────────────────── */}
       <section className="border-y border-border bg-card/50">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border">
+          <SectionAnimated className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border">
             {STATS.map(({ value, label, icon: Icon, color }) => (
               <div key={label} className="px-6 py-8 text-center">
                 <Icon className={`w-5 h-5 ${color} mx-auto mb-2`} />
@@ -190,7 +137,7 @@ export default async function HomePage() {
                 <p className="text-xs text-muted-foreground mt-1">{label}</p>
               </div>
             ))}
-          </div>
+          </SectionAnimated>
         </div>
       </section>
 
@@ -200,7 +147,7 @@ export default async function HomePage() {
           <p className="text-center text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-10">
             Para todos los oficios
           </p>
-          <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-4 max-w-5xl mx-auto">
+          <SectionAnimated className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-4 max-w-5xl mx-auto" stagger={0.04}>
             {TRADES.map(({ icon: Icon, label, gradient, shadow }) => (
               <div key={label} className="flex flex-col items-center gap-2.5 group cursor-default">
                 <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-lg ${shadow} transition-transform group-hover:scale-110 group-hover:-translate-y-0.5`}>
@@ -209,7 +156,7 @@ export default async function HomePage() {
                 <span className="text-[10px] font-medium text-center text-muted-foreground">{label}</span>
               </div>
             ))}
-          </div>
+          </SectionAnimated>
         </div>
       </section>
 
@@ -253,7 +200,7 @@ export default async function HomePage() {
             </h2>
             <p className="text-muted-foreground">Pensadas para el trabajador independiente</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          <SectionAnimated className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
             {FEATURES.map(({ icon: Icon, title, desc, color, bg }) => (
               <div key={title} className="p-6 rounded-2xl border border-border bg-card hover:border-primary/40 transition-all hover:-translate-y-1">
                 <div className={`w-11 h-11 ${bg} rounded-xl flex items-center justify-center mb-4`}>
@@ -263,7 +210,7 @@ export default async function HomePage() {
                 <p className="text-sm text-muted-foreground leading-relaxed">{desc}</p>
               </div>
             ))}
-          </div>
+          </SectionAnimated>
         </div>
       </section>
 
