@@ -1,5 +1,5 @@
 import { createClient } from '@supabase/supabase-js'
-import { Users, Star, CreditCard, TrendingUp } from 'lucide-react'
+import { AnimatedCounters } from '@/components/admin/animated-counters'
 
 async function getStats() {
   const supabase = createClient(
@@ -44,10 +44,10 @@ export default async function AdminOverviewPage() {
   const stats = await getStats()
 
   const cards = [
-    { label: 'Total usuarios', value: stats.totalUsers, icon: Users, color: 'text-sky-400' },
-    { label: 'Plan PRO', value: stats.proUsers, icon: TrendingUp, color: 'text-blue-400' },
-    { label: 'Plan PREMIUM', value: stats.premiumUsers, icon: Star, color: 'text-yellow-400' },
-    { label: 'MRR estimado', value: `$${stats.mrr.toLocaleString('es-AR')}`, icon: CreditCard, color: 'text-green-400' },
+    { label: 'Total usuarios', value: stats.totalUsers, icon: 'users' as const, color: 'text-sky-400' },
+    { label: 'Plan PRO', value: stats.proUsers, icon: 'trending' as const, color: 'text-blue-400' },
+    { label: 'Plan PREMIUM', value: stats.premiumUsers, icon: 'star' as const, color: 'text-yellow-400' },
+    { label: 'MRR estimado', value: stats.mrr, prefix: '$', icon: 'credit' as const, color: 'text-green-400' },
   ]
 
   return (
@@ -57,18 +57,7 @@ export default async function AdminOverviewPage() {
         <p className="text-slate-400 text-sm mt-1">Estado general de la plataforma</p>
       </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {cards.map(card => {
-          const Icon = card.icon
-          return (
-            <div key={card.label} className="bg-slate-800 rounded-xl p-4 border border-slate-700">
-              <Icon className={`w-5 h-5 ${card.color} mb-2`} />
-              <p className={`text-3xl font-bold ${card.color}`}>{card.value}</p>
-              <p className="text-xs text-slate-400 mt-1">{card.label}</p>
-            </div>
-          )
-        })}
-      </div>
+      <AnimatedCounters cards={cards} />
 
       <div className="grid grid-cols-3 gap-4">
         <div className="bg-slate-800 rounded-xl p-4 border border-slate-700">
