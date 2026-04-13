@@ -1,4 +1,5 @@
 import { Navbar } from '@/components/layout/navbar'
+import { SiteFooter } from '@/components/layout/site-footer'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 
 export default async function TerminosPage() {
@@ -19,6 +20,7 @@ export default async function TerminosPage() {
         <h2>Contacto</h2>
         <p>Para consultas: <a href="mailto:hola@tecnoinstalador.com">hola@tecnoinstalador.com</a></p>
       </div>
+      <SiteFooter />
     </div>
   )
 }

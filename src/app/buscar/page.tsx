@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { createServiceRoleClient } from "@/lib/supabase/service"
 import { Navbar } from "@/components/layout/navbar"
+import { SiteFooter } from "@/components/layout/site-footer"
 import { ResultsAnimated } from "@/components/marketplace/results-animated"
 import { sortInstallersByPlan } from "@/lib/plans"
 import { Search } from "lucide-react"
@@ -76,6 +77,24 @@ async function Results({ searchParams }: { searchParams: SearchParams }) {
   )
 }
 
+export async function generateMetadata({ searchParams }: Props) {
+  const { ciudad, provincia, trade } = await searchParams
+  const parts = [
+    trade && trade !== 'todos' ? trade.charAt(0).toUpperCase() + trade.slice(1).replace(/-/g, ' ') : null,
+    ciudad ?? null,
+    provincia && provincia !== 'todas' ? provincia : null,
+  ].filter(Boolean)
+
+  const title = parts.length > 0
+    ? `${parts.join(' en ')} – Profesionales verificados`
+    : 'Buscá instaladores y técnicos en Argentina'
+  const description = parts.length > 0
+    ? `Encontrá ${parts[0] ?? 'profesionales'} en ${parts.slice(1).join(', ') || 'Argentina'} con reseñas reales. Contacto directo por WhatsApp.`
+    : 'Buscá electricistas, plomeros, gasistas y más de 30 oficios en toda Argentina. Perfiles verificados con reseñas reales.'
+
+  return { title, description, openGraph: { title, description } }
+}
+
 export default async function BuscarPage({ searchParams }: Props) {
   const params = await searchParams
   const supabase = await createServerSupabaseClient()
@@ -108,6 +127,7 @@ export default async function BuscarPage({ searchParams }: Props) {
           </div>
         </div>
       </div>
+      <SiteFooter />
     </div>
   )
 }

@@ -4,6 +4,8 @@ import {
   IconDeviceDesktop, IconPlant, IconBucket, IconEngine, IconCar, IconTruck,
   IconPaint, IconNetwork, IconWashMachine, IconBuilding, IconBug, IconSmartHome,
   IconDeviceMobile, IconWindow, IconDoor, IconRouter,
+  IconRotate, IconTool, IconArmchair, IconMotorbike, IconSnowflake, IconPaw,
+  IconBuildingSkyscraper,
   type TablerIcon,
 } from '@tabler/icons-react'
 
@@ -44,6 +46,14 @@ const MAP: Array<{ keywords: string[]; icon: TradeIcon }> = [
   { keywords: ['celular', 'móvil', 'movil'],              icon: { Icon: IconDeviceMobile,      gradient: 'from-pink-400 to-rose-500' } },
   { keywords: ['vidriero', 'aberturas', 'vidriería'],     icon: { Icon: IconWindow,            gradient: 'from-sky-200 to-blue-400' } },
   { keywords: ['network', 'infraestructura'],             icon: { Icon: IconNetwork,           gradient: 'from-violet-300 to-purple-400' } },
+  { keywords: ['bobinador', 'bobinado', 'motor'],         icon: { Icon: IconRotate,            gradient: 'from-yellow-500 to-orange-600' } },
+  { keywords: ['tornero', 'fresador', 'mecanizado'],      icon: { Icon: IconTool,              gradient: 'from-slate-400 to-gray-600' } },
+  { keywords: ['tapicero', 'tapizado'],                   icon: { Icon: IconArmchair,          gradient: 'from-rose-300 to-pink-500' } },
+  { keywords: ['mecánico de moto', 'moto'],               icon: { Icon: IconMotorbike,         gradient: 'from-zinc-500 to-slate-700' } },
+  { keywords: ['heladera', 'freezer', 'refriger'],        icon: { Icon: IconSnowflake,         gradient: 'from-sky-300 to-blue-500' } },
+  { keywords: ['lavarropas', 'secarropas'],               icon: { Icon: IconWashMachine,       gradient: 'from-blue-400 to-indigo-600' } },
+  { keywords: ['veterinario', 'mascota', 'animales'],     icon: { Icon: IconPaw,               gradient: 'from-amber-400 to-orange-500' } },
+  { keywords: ['maestro mayor', 'maestro de obras'],      icon: { Icon: IconBuildingSkyscraper,gradient: 'from-stone-500 to-neutral-700' } },
 ]
 
 export function getTradeIcon(tradeName: string): TradeIcon {

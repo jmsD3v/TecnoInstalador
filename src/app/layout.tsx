@@ -14,13 +14,32 @@ const monaspaceKrypton = localFont({
   display: 'swap',
 })
 
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.com'
+
 export const metadata: Metadata = {
+  metadataBase: new URL(APP_URL),
   title: {
-    default: "TecnoInstalador – Encontrá al profesional ideal",
+    default: "TecnoInstalador – Electricistas, Plomeros y Técnicos en Argentina",
     template: "%s | TecnoInstalador",
   },
   description:
-    "TecnoInstalador conecta a electricistas, plomeros, gasistas, técnicos y más con clientes que necesitan sus servicios.",
+    "Encontrá electricistas, plomeros, gasistas, técnicos en aire acondicionado y más de 30 oficios en tu ciudad. Perfiles verificados, reseñas reales y contacto directo por WhatsApp.",
+  keywords: [
+    "electricista", "plomero", "gasista", "técnico", "instalador",
+    "electricista cerca", "plomero urgente", "gasista matriculado",
+    "técnico aire acondicionado", "carpintero", "pintor",
+    "instalador solar", "técnico heladera", "electricista Argentina",
+    "contratar electricista", "servicio técnico domicilio",
+    "TecnoInstalador",
+  ],
+  authors: [{ name: "TecnoInstalador", url: APP_URL }],
+  creator: "TecnoInstalador",
+  publisher: "TecnoInstalador",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
+  },
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -30,10 +49,20 @@ export const metadata: Metadata = {
   formatDetection: { telephone: false },
   openGraph: {
     type: "website",
+    locale: "es_AR",
     siteName: "TecnoInstalador",
-    title: "TecnoInstalador – Encontrá al profesional ideal",
-    description: "Conectamos instaladores y técnicos con clientes en toda Argentina.",
+    title: "TecnoInstalador – Electricistas, Plomeros y Técnicos en Argentina",
+    description: "Encontrá profesionales verificados cerca tuyo. Más de 30 oficios, reseñas reales y contacto directo por WhatsApp.",
+    url: APP_URL,
+    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "TecnoInstalador" }],
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "TecnoInstalador – Electricistas, Plomeros y Técnicos en Argentina",
+    description: "Encontrá profesionales verificados cerca tuyo. Más de 30 oficios en toda Argentina.",
+    images: ["/og-default.png"],
+  },
+  alternates: { canonical: APP_URL },
 }
 
 export const viewport: Viewport = {

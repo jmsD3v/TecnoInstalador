@@ -1,4 +1,5 @@
 import { Navbar } from "@/components/layout/navbar"
+import { SiteFooter } from "@/components/layout/site-footer"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { fetchPlanPrices } from "@/lib/mp-plans"
 import { PricingCards } from "@/components/pricing/pricing-cards"
@@ -28,6 +29,7 @@ export default async function PlanesPage() {
           isLoggedIn={!!user}
         />
       </main>
+      <SiteFooter />
     </>
   )
 }

@@ -12,6 +12,7 @@ import { COLOR_PALETTES } from "@/types"
 import { buildContactMessage } from "@/lib/utils"
 import { getTradeIcon } from "@/lib/trade-icons"
 import { Navbar } from "@/components/layout/navbar"
+import { SiteFooter } from "@/components/layout/site-footer"
 import { ProfileAnimated } from "@/components/installer/profile-animated"
 
 interface Props {
@@ -30,9 +31,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!data) return { title: 'Instalador no encontrado' }
   const name = data.nombre_comercial ?? `${data.nombre} ${data.apellido}`
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.com'
+  const url = `${APP_URL}/i/${slug}`
+  const title = `${name} – ${data.ciudad} | TecnoInstalador`
+  const description = data.descripcion
+    ?? `Contratá a ${name} en ${data.ciudad}. Profesional verificado con reseñas reales. Contacto directo por WhatsApp.`
   return {
-    title: `${name} – ${data.ciudad}`,
-    description: data.descripcion ?? `Perfil profesional de ${name}`,
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      type: 'profile',
+    },
   }
 }
 
@@ -72,8 +85,70 @@ export default async function InstallerProfilePage({ params }: Props) {
     buildContactMessage(displayName)
   )}`
 
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.com'
+  const profileUrl = `${APP_URL}/i/${installer.url_slug}`
+
+  // JSON-LD: LocalBusiness + BreadcrumbList
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'LocalBusiness',
+        '@id': profileUrl,
+        name: displayName,
+        description: installer.descripcion ?? `Profesional de ${mainTrade} en ${installer.ciudad}`,
+        url: profileUrl,
+        telephone: installer.whatsapp ? `+54${installer.whatsapp}` : undefined,
+        address: {
+          '@type': 'PostalAddress',
+          addressLocality: installer.ciudad,
+          addressRegion: installer.provincia,
+          addressCountry: 'AR',
+        },
+        ...(installer.foto_perfil_url && { image: installer.foto_perfil_url }),
+        ...(installer.total_reviews > 0 && {
+          aggregateRating: {
+            '@type': 'AggregateRating',
+            ratingValue: installer.avg_rating.toFixed(1),
+            reviewCount: installer.total_reviews,
+            bestRating: '5',
+            worstRating: '1',
+          },
+        }),
+        ...(reviews.length > 0 && {
+          review: reviews.slice(0, 5).map((r: any) => ({
+            '@type': 'Review',
+            author: { '@type': 'Person', name: r.nombre_cliente },
+            reviewRating: { '@type': 'Rating', ratingValue: r.rating, bestRating: '5' },
+            reviewBody: r.comentario,
+          })),
+        }),
+        hasOfferCatalog: trades.length > 0 ? {
+          '@type': 'OfferCatalog',
+          name: 'Servicios',
+          itemListElement: trades.map((t: any) => ({
+            '@type': 'Offer',
+            itemOffered: { '@type': 'Service', name: t.nombre },
+          })),
+        } : undefined,
+      },
+      {
+        '@type': 'BreadcrumbList',
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: 'Inicio', item: APP_URL },
+          { '@type': 'ListItem', position: 2, name: 'Buscar instaladores', item: `${APP_URL}/buscar` },
+          { '@type': 'ListItem', position: 3, name: displayName, item: profileUrl },
+        ],
+      },
+    ],
+  }
+
   return (
     <div className="min-h-screen bg-background">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Navbar user={user} />
 
       {/* ── BACK LINK ─────────────────────────────── */}
@@ -267,6 +342,7 @@ export default async function InstallerProfilePage({ params }: Props) {
         )}
       </div>{/* end container */}
       </ProfileAnimated>
+      <SiteFooter />
     </div>
   )
 }

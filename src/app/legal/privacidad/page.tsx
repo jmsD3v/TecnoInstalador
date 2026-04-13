@@ -1,4 +1,5 @@
 import { Navbar } from '@/components/layout/navbar'
+import { SiteFooter } from '@/components/layout/site-footer'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 
 export default async function PrivacidadPage() {
@@ -19,6 +20,7 @@ export default async function PrivacidadPage() {
         <h2>Contacto</h2>
         <p>Para ejercer derechos ARCO: <a href="mailto:privacidad@tecnoinstalador.com">privacidad@tecnoinstalador.com</a></p>
       </div>
+      <SiteFooter />
     </div>
   )
 }

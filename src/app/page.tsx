@@ -361,11 +361,22 @@ export default async function HomePage() {
             </div>
             <span className="font-semibold text-foreground">TecnoInstalador</span>
           </div>
-          <p>© {new Date().getFullYear()} TecnoInstalador. Todos los derechos reservados.</p>
-          <div className="flex items-center justify-center gap-4 mt-2">
+          <div className="flex items-center justify-center gap-4 mt-2 mb-3">
             <Link href="/legal/terminos" className="hover:text-foreground transition-colors">Términos y Condiciones</Link>
             <Link href="/legal/privacidad" className="hover:text-foreground transition-colors">Privacidad</Link>
           </div>
+          <p className="text-xs text-muted-foreground/60">
+            Copyright © {new Date().getFullYear()} · Desarrollado desde Las Breñas con 💜 por{' '}
+            <a
+              href="https://www.linkedin.com/in/jmsilva83"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors font-medium"
+            >
+              @jmsDev
+            </a>{' '}
+            — All rights reserved
+          </p>
         </div>
       </footer>
     </div>
