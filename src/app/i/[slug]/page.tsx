@@ -1,14 +1,14 @@
 import { notFound } from "next/navigation"
 import { Metadata } from "next"
-import { MapPin, Star, CheckCircle2, MessageCircle, Share2, ArrowLeft } from "lucide-react"
+import { MapPin, Star, CheckCircle2, MessageCircle } from "lucide-react"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { PlanBadge } from "@/components/ui/plan-badge"
 import { StarRating, InstallerAvatar } from "@/components/ui/avatar"
-import { ReviewCard } from "@/components/reviews/review-card"
+import { CollapsibleReviews } from "@/components/installer/collapsible-reviews"
 import { WhatsAppCTA } from "@/components/installer/whatsapp-cta"
 import { COLOR_PALETTES } from "@/types"
 import { buildContactMessage } from "@/lib/utils"
-import Link from "next/link"
+import { getTradeIcon } from "@/lib/trade-icons"
 import { Navbar } from "@/components/layout/navbar"
 import { ProfileAnimated } from "@/components/installer/profile-animated"
 
@@ -71,16 +71,9 @@ export default async function InstallerProfilePage({ params }: Props) {
     <div className="min-h-screen bg-background">
       <Navbar user={user} />
 
-      <div className="container max-w-2xl mx-auto px-4 pt-4">
-        <Link href="/buscar" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
-          <ArrowLeft className="w-3.5 h-3.5" />
-          Buscar instaladores
-        </Link>
-      </div>
-
       {/* ── COVER ─────────────────────────────────── */}
       <div
-        className={installer.banner_url ? "h-48 md:h-56 relative overflow-hidden" : "h-32 md:h-44 relative overflow-hidden"}
+        className={installer.banner_url ? "h-56 md:h-72 relative overflow-hidden" : "h-36 md:h-48 relative overflow-hidden"}
         style={installer.banner_url ? undefined : { background: `linear-gradient(135deg, ${palette.primary}ee, ${palette.primary}99)` }}
       >
         {installer.banner_url ? (
@@ -188,16 +181,20 @@ export default async function InstallerProfilePage({ params }: Props) {
               <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mt-4 mb-3">
                 Oficios
               </h2>
-              <div className="flex flex-wrap gap-2">
-                {trades.map((trade: any) => (
-                  <span
-                    key={trade.id}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border"
-                    style={{ borderColor: palette.border, background: palette.bg, color: palette.primary }}
-                  >
-                    {trade.nombre}
-                  </span>
-                ))}
+              <div className="flex flex-wrap gap-3">
+                {trades.map((trade: any) => {
+                  const { Icon, gradient } = getTradeIcon(trade.nombre)
+                  return (
+                    <div key={trade.id} className="flex flex-col items-center gap-1.5">
+                      <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-md`}>
+                        <Icon className="w-5 h-5 text-white" />
+                      </div>
+                      <span className="text-xs font-medium text-muted-foreground text-center leading-tight max-w-[64px]">
+                        {trade.nombre}
+                      </span>
+                    </div>
+                  )
+                })}
               </div>
             </div>
           )}
@@ -252,11 +249,7 @@ export default async function InstallerProfilePage({ params }: Props) {
                 </div>
               )}
             </div>
-            <div className="space-y-3">
-              {reviews.map((review: any) => (
-                <ReviewCard key={review.id} review={review} />
-              ))}
-            </div>
+            <CollapsibleReviews reviews={reviews} />
           </div>
         )}
       </div>{/* end container */}
