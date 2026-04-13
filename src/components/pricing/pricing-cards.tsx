@@ -115,7 +115,7 @@ export function PricingCards({
       </div>
 
       {/* Cards grid */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start mt-5">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-stretch mt-5">
         {plans.map(plan => {
           const isFeatured  = plan === 'PRO'
           const isPremium   = plan === 'PREMIUM'
