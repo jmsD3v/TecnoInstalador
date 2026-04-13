@@ -19,7 +19,8 @@
       "Bash(curl -s \"https://apis.datos.gob.ar/georef/api/localidades?nombre=Resi&max=10&campos=nombre,provincia.nombre\")",
       "Bash(curl -s \"https://apis.datos.gob.ar/georef/api/localidades?nombre=Re&max=10&campos=nombre,provincia.nombre\")",
       "Bash(find:*)",
-      "Bash(pnpm add:*)"
+      "Bash(pnpm add:*)",
+      "Bash(pnpm build:*)"
     ]
   }
 }
