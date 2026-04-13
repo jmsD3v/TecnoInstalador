@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   LayoutDashboard, User, Wrench, Image, Star, MessageSquare,
-  FileText, CreditCard, BarChart2, ChevronRight, Crown, Zap,
+  FileText, CreditCard, BarChart2, ChevronRight, Crown, Zap, Home, ShieldCheck,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PlanType } from "@/types"
@@ -14,6 +14,7 @@ interface SidebarProps {
   plan: PlanType
   trialEndsAt?: string | null
   urlSlug?: string
+  isAdmin?: boolean
 }
 
 interface NavItem {
@@ -22,14 +23,15 @@ interface NavItem {
   icon: React.ElementType
   planRequired?: PlanType[]
   badge?: string
+  exact?: boolean
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { href: '/dashboard', label: 'Resumen', icon: LayoutDashboard },
+  { href: '/dashboard', label: 'Resumen', icon: LayoutDashboard, exact: true },
   { href: '/dashboard/profile', label: 'Mi perfil', icon: User },
   { href: '/dashboard/services', label: 'Oficios y servicios', icon: Wrench },
   { href: '/dashboard/gallery', label: 'Galería', icon: Image },
-  { href: '/dashboard/reviews', label: 'Reseñas', icon: Star },
+  { href: '/dashboard/reviews', label: 'Reseñas', icon: Star, exact: true },
   { href: '/dashboard/reviews/invites', label: 'Links de reseña', icon: MessageSquare },
   {
     href: '/dashboard/quotes',
@@ -46,12 +48,12 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/dashboard/plan', label: 'Mi plan', icon: CreditCard },
 ]
 
-export function DashboardSidebar({ plan, trialEndsAt, urlSlug }: SidebarProps) {
+export function DashboardSidebar({ plan, trialEndsAt, urlSlug, isAdmin }: SidebarProps) {
   const pathname = usePathname()
   const isTrialActive = trialEndsAt && new Date(trialEndsAt) > new Date()
 
   return (
-    <aside className="w-64 shrink-0 hidden lg:flex flex-col border-r border-border bg-card min-h-screen">
+    <aside className="w-64 shrink-0 hidden lg:flex flex-col border-r border-border bg-card sticky top-0 h-screen overflow-y-auto">
       {/* Plan badge */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center justify-between">
@@ -75,7 +77,9 @@ export function DashboardSidebar({ plan, trialEndsAt, urlSlug }: SidebarProps) {
       <nav className="flex-1 p-3 flex flex-col gap-1">
         {NAV_ITEMS.map(item => {
           const Icon = item.icon
-          const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))
+          const isActive = item.exact
+            ? pathname === item.href
+            : pathname === item.href || pathname.startsWith(item.href + '/')
           const isLocked = item.planRequired && !item.planRequired.includes(plan) && !isTrialActive
 
           return (
@@ -102,13 +106,30 @@ export function DashboardSidebar({ plan, trialEndsAt, urlSlug }: SidebarProps) {
         })}
       </nav>
 
-      {/* Bottom: view public profile */}
-      <div className="p-4 border-t border-border">
-        <p className="text-xs text-muted-foreground text-center">
-          <Link href={urlSlug ? `/i/${urlSlug}` : '#'} className="hover:text-primary flex items-center justify-center gap-1">
-            Ver mi perfil público <ChevronRight className="w-3 h-3" />
+      {/* Bottom */}
+      <div className="p-4 border-t border-border space-y-2">
+        <Link
+          href="/"
+          className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <Home className="w-3.5 h-3.5" />
+          Ir al inicio
+        </Link>
+        <Link
+          href={urlSlug ? `/i/${urlSlug}` : '#'}
+          className="flex items-center gap-1 text-xs text-muted-foreground hover:text-primary transition-colors"
+        >
+          Ver mi perfil público <ChevronRight className="w-3 h-3" />
+        </Link>
+        {isAdmin && (
+          <Link
+            href="/admin"
+            className="flex items-center gap-1.5 text-xs font-semibold text-orange-500 hover:text-orange-400 transition-colors"
+          >
+            <ShieldCheck className="w-3.5 h-3.5" />
+            Panel de administración
           </Link>
-        </p>
+        )}
       </div>
     </aside>
   )

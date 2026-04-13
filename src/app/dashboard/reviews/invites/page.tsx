@@ -9,6 +9,7 @@ import { createClient } from "@/lib/supabase/client"
 import { useToast } from "@/components/ui/toast"
 import { ReviewInvite } from "@/types"
 import { Link2, Copy, Check, Plus, Clock } from "lucide-react"
+import { Skeleton } from "@/components/ui/skeleton"
 import { formatRelativeDate } from "@/lib/utils"
 
 export default function InvitesPage() {
@@ -90,8 +91,15 @@ export default function InvitesPage() {
   }
 
   if (loading) return (
-    <div className="flex items-center justify-center h-64">
-      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+    <div className="max-w-2xl mx-auto space-y-6">
+      <div className="space-y-2">
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-4 w-64" />
+      </div>
+      <Skeleton className="h-32 w-full rounded-xl" />
+      <div className="space-y-3">
+        {[1, 2, 3].map(i => <Skeleton key={i} className="h-16 w-full rounded-xl" />)}
+      </div>
     </div>
   )
 

@@ -13,6 +13,9 @@ export default async function DashboardLayout({
 
   if (!user) redirect('/auth/login')
 
+  const adminEmails = (process.env.ADMIN_EMAILS ?? '').split(',').map(e => e.trim()).filter(Boolean)
+  const isAdmin = adminEmails.includes(user.email ?? '')
+
   const { data: installer } = await supabase
     .from('installers')
     .select('plan, trial_ends_at, url_slug, onboarding_completed')
@@ -33,7 +36,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex min-h-screen bg-muted/20">
-      <DashboardSidebar plan={installer.plan} trialEndsAt={installer.trial_ends_at} urlSlug={installer.url_slug} />
+      <DashboardSidebar plan={installer.plan} trialEndsAt={installer.trial_ends_at} urlSlug={installer.url_slug} isAdmin={isAdmin} />
       <main className="flex-1 flex flex-col">
         <div className="flex-1 p-4 md:p-6 pb-24 lg:pb-6">
           <InstallerProvider>{children}</InstallerProvider>

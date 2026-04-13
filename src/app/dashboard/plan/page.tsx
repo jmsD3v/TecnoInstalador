@@ -1,10 +1,10 @@
 'use client'
 
 import { useState, useEffect } from "react"
-import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 import { createClient } from "@/lib/supabase/client"
 import { useToast } from "@/components/ui/toast"
 import { Installer, PlanType, Subscription } from "@/types"
@@ -13,12 +13,10 @@ import type { PlanPrices } from "@/lib/mp-plans"
 import { Crown, Zap } from "lucide-react"
 import { PricingCards } from "@/components/pricing/pricing-cards"
 
+const supabase = createClient()
 
 export default function PlanPage() {
-  const supabase = createClient()
   const toast = useToast()
-  const router = useRouter()
-  const searchParams = useSearchParams()
 
   const [installer, setInstaller] = useState<Installer | null>(null)
   const [subscription, setSubscription] = useState<Subscription | null>(null)
@@ -29,15 +27,16 @@ export default function PlanPage() {
   const [showCancelConfirm, setShowCancelConfirm] = useState(false)
 
   useEffect(() => {
-    const status = searchParams.get('status')
+    const params = new URLSearchParams(window.location.search)
+    const status = params.get('status')
     if (status === 'success') {
       toast({ title: '¡Suscripción iniciada!', description: 'Tu plan se activará en minutos.', variant: 'success' })
-      router.replace('/dashboard/plan')
+      window.history.replaceState({}, '', '/dashboard/plan')
     } else if (status === 'failure') {
       toast({ title: 'Pago no completado', description: 'Podés intentarlo de nuevo cuando quieras.', variant: 'error' })
-      router.replace('/dashboard/plan')
+      window.history.replaceState({}, '', '/dashboard/plan')
     }
-  }, [searchParams])
+  }, [])
 
   useEffect(() => {
     const load = async () => {
@@ -47,14 +46,22 @@ export default function PlanPage() {
       ])
       if (!user) return
       if (pricesRes.ok) setPrices(await pricesRes.json())
-      const { data } = await supabase
+      const { data: inst } = await supabase
         .from('installers')
-        .select('*, subscriptions(*)')
+        .select('*')
         .eq('user_id', user.id)
         .single()
-      setInstaller(data)
-      const subs = (data as any)?.subscriptions
-      setSubscription(Array.isArray(subs) ? subs[0] ?? null : subs ?? null)
+      setInstaller(inst)
+      if (inst) {
+        const { data: sub } = await supabase
+          .from('subscriptions')
+          .select('*')
+          .eq('installer_id', inst.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle()
+        setSubscription(sub ?? null)
+      }
       setLoading(false)
     }
     load()
@@ -102,8 +109,15 @@ export default function PlanPage() {
   }
 
   if (loading) return (
-    <div className="flex items-center justify-center h-64">
-      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+    <div className="max-w-3xl mx-auto space-y-6">
+      <div className="space-y-2">
+        <Skeleton className="h-8 w-32" />
+        <Skeleton className="h-4 w-48" />
+      </div>
+      <Skeleton className="h-24 w-full rounded-xl" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {[1, 2, 3].map(i => <Skeleton key={i} className="h-72 rounded-xl" />)}
+      </div>
     </div>
   )
   if (!installer) return null

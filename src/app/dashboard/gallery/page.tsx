@@ -200,15 +200,6 @@ export default function GalleryPage() {
             </div>
           ))}
 
-          {/* Add more slot */}
-          {!atLimit && (
-            <div
-              className="aspect-square rounded-xl border-2 border-dashed border-border flex items-center justify-center cursor-pointer hover:border-primary/50 transition-colors"
-              onClick={() => fileRef.current?.click()}
-            >
-              <Upload className="w-6 h-6 text-muted-foreground" />
-            </div>
-          )}
         </div>
       )}
     </div>
