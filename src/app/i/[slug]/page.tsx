@@ -181,15 +181,15 @@ export default async function InstallerProfilePage({ params }: Props) {
               <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mt-4 mb-3">
                 Oficios
               </h2>
-              <div className="flex flex-wrap gap-3">
+              <div className="grid grid-cols-4 gap-x-2 gap-y-4">
                 {trades.map((trade: any) => {
                   const { Icon, gradient } = getTradeIcon(trade.nombre)
                   return (
                     <div key={trade.id} className="flex flex-col items-center gap-1.5">
-                      <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-md`}>
+                      <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-md shrink-0`}>
                         <Icon className="w-5 h-5 text-white" />
                       </div>
-                      <span className="text-xs font-medium text-muted-foreground text-center leading-tight max-w-[64px]">
+                      <span className="text-xs font-medium text-muted-foreground text-center leading-tight w-full">
                         {trade.nombre}
                       </span>
                     </div>

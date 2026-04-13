@@ -18,6 +18,8 @@ export function ResultsAnimated({ installers }: { installers: Installer[] }) {
       duration: 0.4,
       ease: 'power2.out',
       stagger: 0.06,
+      clearProps: 'opacity,transform',
+      overwrite: 'auto',
     })
   }, [installers])
 

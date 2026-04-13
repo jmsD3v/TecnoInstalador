@@ -1,31 +1,43 @@
 import Link from "next/link"
 import {
-  Wrench, Zap, Droplets, Flame, Wind, Star, Shield, Smartphone,
-  CheckCircle2, HardHat, PaintBucket, KeyRound,
+  Wrench, Star, Shield, Smartphone,
+  CheckCircle2,
   ArrowRight, Users, FileText, TrendingUp, MessageCircle,
-  Monitor, Wifi, Camera, Package, Sun, Truck, Leaf, Hammer
 } from "lucide-react"
+import {
+  IconPlug, IconDroplet, IconFlame, IconAirConditioning, IconWall,
+  IconCamera, IconHammer, IconSolarPanel, IconDeviceDesktop,
+  IconRouter, IconDeviceMobile, IconPlant,
+  IconPaint, IconKey, IconBug, IconSmartHome, IconBuilding, IconEngine,
+} from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Navbar } from "@/components/layout/navbar"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { fetchPlanPrices } from "@/lib/mp-plans"
-import { HeroAnimated } from '@/components/home/hero-animated'
+import { HeroCarousel } from '@/components/home/hero-carousel'
 import { SectionAnimated } from '@/components/home/sections-animated'
+import { CountUp } from '@/components/home/count-up-stat'
 
 const TRADES = [
-  { icon: Zap,         label: "Electricidad",    gradient: "from-yellow-400 to-amber-500",   shadow: "shadow-yellow-500/20" },
-  { icon: Droplets,    label: "Plomería",         gradient: "from-sky-400 to-blue-500",        shadow: "shadow-sky-500/20" },
-  { icon: Flame,       label: "Gas",              gradient: "from-orange-500 to-red-500",      shadow: "shadow-orange-500/20" },
-  { icon: Wind,        label: "Aire Acond.",      gradient: "from-cyan-400 to-teal-500",       shadow: "shadow-cyan-500/20" },
-  { icon: Monitor,     label: "Técnico PC",       gradient: "from-blue-400 to-indigo-500",     shadow: "shadow-blue-500/20" },
-  { icon: Wifi,        label: "Redes/Internet",   gradient: "from-violet-400 to-purple-500",   shadow: "shadow-violet-500/20" },
-  { icon: Camera,      label: "Cámaras CCTV",     gradient: "from-slate-400 to-slate-600",     shadow: "shadow-slate-500/20" },
-  { icon: Smartphone,  label: "Tec. Celulares",   gradient: "from-pink-400 to-rose-500",       shadow: "shadow-pink-500/20" },
-  { icon: Package,     label: "Muebles MDF",      gradient: "from-amber-400 to-yellow-600",    shadow: "shadow-amber-500/20" },
-  { icon: Sun,         label: "Energía Solar",    gradient: "from-yellow-300 to-orange-400",   shadow: "shadow-yellow-400/20" },
-  { icon: HardHat,     label: "Albañilería",      gradient: "from-stone-400 to-stone-600",     shadow: "shadow-stone-500/20" },
-  { icon: Leaf,        label: "Jardinería",       gradient: "from-emerald-400 to-green-500",   shadow: "shadow-emerald-500/20" },
+  { icon: IconPlug,            label: "Electricista",     gradient: "from-yellow-400 to-amber-500",   shadow: "shadow-yellow-500/20" },
+  { icon: IconDroplet,         label: "Plomero",          gradient: "from-sky-400 to-blue-500",        shadow: "shadow-sky-500/20" },
+  { icon: IconFlame,           label: "Gasista",          gradient: "from-orange-500 to-red-500",      shadow: "shadow-orange-500/20" },
+  { icon: IconAirConditioning, label: "Aire Acond.",      gradient: "from-cyan-400 to-teal-500",       shadow: "shadow-cyan-500/20" },
+  { icon: IconEngine,          label: "Mecánico",         gradient: "from-zinc-500 to-slate-700",      shadow: "shadow-slate-500/20" },
+  { icon: IconWall,            label: "Albañil",          gradient: "from-stone-400 to-stone-600",     shadow: "shadow-stone-500/20" },
+  { icon: IconHammer,          label: "Carpintero",       gradient: "from-amber-400 to-yellow-600",    shadow: "shadow-amber-500/20" },
+  { icon: IconPaint,           label: "Pintor",           gradient: "from-lime-400 to-green-500",      shadow: "shadow-lime-500/20" },
+  { icon: IconKey,             label: "Cerrajero",        gradient: "from-rose-400 to-pink-600",       shadow: "shadow-rose-500/20" },
+  { icon: IconCamera,          label: "Cámaras CCTV",     gradient: "from-slate-400 to-slate-600",     shadow: "shadow-slate-500/20" },
+  { icon: IconDeviceDesktop,   label: "Técnico PC",       gradient: "from-blue-400 to-indigo-500",     shadow: "shadow-blue-500/20" },
+  { icon: IconRouter,          label: "Redes/Internet",   gradient: "from-violet-400 to-purple-500",   shadow: "shadow-violet-500/20" },
+  { icon: IconDeviceMobile,    label: "Tec. Celulares",   gradient: "from-pink-400 to-rose-500",       shadow: "shadow-pink-500/20" },
+  { icon: IconSolarPanel,      label: "Energía Solar",    gradient: "from-yellow-300 to-orange-400",   shadow: "shadow-yellow-400/20" },
+  { icon: IconPlant,           label: "Jardinero",        gradient: "from-emerald-400 to-green-500",   shadow: "shadow-emerald-500/20" },
+  { icon: IconBuilding,        label: "Techista",         gradient: "from-stone-500 to-stone-700",     shadow: "shadow-stone-500/20" },
+  { icon: IconSmartHome,       label: "Domótica",         gradient: "from-indigo-400 to-violet-600",   shadow: "shadow-indigo-500/20" },
+  { icon: IconBug,             label: "Fumigador",        gradient: "from-green-600 to-emerald-700",   shadow: "shadow-green-500/20" },
 ]
 
 const FEATURES = [
@@ -123,39 +135,71 @@ export default async function HomePage() {
         <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-violet-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-sky-500/5 rounded-full blur-3xl pointer-events-none" />
 
-        <HeroAnimated isLoggedIn={!!user} />
+        <HeroCarousel isLoggedIn={!!user} />
       </section>
 
       {/* ── STATS ────────────────────────────────────────── */}
       <section className="border-y border-border bg-card/50">
         <div className="container mx-auto px-4">
-          <SectionAnimated className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border">
+          <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-border">
             {STATS.map(({ value, label, icon: Icon, color }) => (
               <div key={label} className="px-6 py-8 text-center">
                 <Icon className={`w-5 h-5 ${color} mx-auto mb-2`} />
-                <p className={`text-3xl font-extrabold ${color}`}>{value}</p>
+                <CountUp value={value} color={color} />
                 <p className="text-xs text-muted-foreground mt-1">{label}</p>
               </div>
             ))}
-          </SectionAnimated>
+          </div>
         </div>
       </section>
 
       {/* ── TRADES ───────────────────────────────────────── */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <p className="text-center text-xs font-bold text-muted-foreground uppercase tracking-[0.2em] mb-10">
-            Para todos los oficios
-          </p>
-          <SectionAnimated className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-12 gap-4 max-w-5xl mx-auto" stagger={0.04}>
+      <section className="py-24 relative overflow-hidden">
+        {/* subtle bg texture */}
+        <div className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `radial-gradient(circle at 20% 50%, hsl(var(--primary) / 0.04) 0%, transparent 60%),
+                              radial-gradient(circle at 80% 50%, hsl(215 22% 18% / 0.4) 0%, transparent 60%)`,
+          }}
+        />
+        <div className="container mx-auto px-4 relative">
+          {/* Header */}
+          <SectionAnimated className="text-center mb-14">
+            <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary text-xs font-bold px-4 py-2 rounded-full mb-6 tracking-wider uppercase">
+              <Wrench className="w-3.5 h-3.5" />
+              +30 oficios disponibles
+            </div>
+            <h2 className="text-4xl md:text-5xl font-extrabold mb-4 leading-tight">
+              Cualquier trabajo,{" "}
+              <span className="bg-gradient-to-r from-orange-500 to-yellow-400 bg-clip-text text-transparent">
+                el experto ideal
+              </span>
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+              Desde reparaciones urgentes hasta reformas completas — con reseñas reales y contacto directo.
+            </p>
+          </SectionAnimated>
+
+          {/* Grid */}
+          <SectionAnimated className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3 max-w-4xl mx-auto" stagger={0.04}>
             {TRADES.map(({ icon: Icon, label, gradient, shadow }) => (
-              <div key={label} className="flex flex-col items-center gap-2.5 group cursor-default">
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-lg ${shadow} transition-transform group-hover:scale-110 group-hover:-translate-y-0.5`}>
-                  <Icon className="w-5 h-5 text-white" />
+              <div key={label} className={`group flex flex-col items-center gap-3 p-4 rounded-2xl border border-border/40 bg-card/60 hover:bg-card hover:border-border hover:shadow-xl transition-all duration-300 cursor-default`}>
+                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center shadow-lg ${shadow} transition-transform duration-300 group-hover:scale-110 group-hover:-translate-y-1`}>
+                  <Icon className="w-7 h-7 text-white" />
                 </div>
-                <span className="text-[10px] font-medium text-center text-muted-foreground">{label}</span>
+                <span className="text-xs font-semibold text-center text-foreground/70 group-hover:text-foreground leading-tight transition-colors">{label}</span>
               </div>
             ))}
+          </SectionAnimated>
+
+          {/* CTA */}
+          <SectionAnimated className="flex justify-center mt-12">
+            <Button size="lg" asChild className="gap-2 shadow-lg shadow-primary/20">
+              <Link href="/buscar">
+                Buscar profesionales
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+            </Button>
           </SectionAnimated>
         </div>
       </section>

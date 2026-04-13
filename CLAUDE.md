@@ -11,3 +11,4 @@
 - Keep solutions simple and direct.
 - Always delete dead code — unused functions, unreachable routes, orphaned helpers.
 - User instructions always override this file.
+- 

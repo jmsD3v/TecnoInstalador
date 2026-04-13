@@ -1,10 +1,12 @@
 'use client'
 
+import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   LayoutDashboard, User, Wrench, Image, Star, MessageSquare,
   FileText, CreditCard, BarChart2, ChevronRight, Crown, Zap, Home, ShieldCheck,
+  Menu, X,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PlanType } from "@/types"
@@ -135,39 +137,156 @@ export function DashboardSidebar({ plan, trialEndsAt, urlSlug, isAdmin }: Sideba
   )
 }
 
-// Mobile bottom navigation
-export function MobileBottomNav({ plan }: { plan: PlanType }) {
+// Mobile bottom navigation + drawer
+export function MobileBottomNav({
+  plan,
+  urlSlug,
+  isAdmin,
+  trialEndsAt,
+}: {
+  plan: PlanType
+  urlSlug?: string | null
+  isAdmin?: boolean
+  trialEndsAt?: string | null
+}) {
   const pathname = usePathname()
+  const [open, setOpen] = useState(false)
+  const isTrialActive = trialEndsAt && new Date(trialEndsAt) > new Date()
 
-  const mobileItems = [
-    { href: '/dashboard', label: 'Inicio', icon: LayoutDashboard },
-    { href: '/dashboard/profile', label: 'Perfil', icon: User },
-    { href: '/dashboard/reviews', label: 'Reseñas', icon: Star },
-    { href: '/dashboard/quotes', label: 'Presupto.', icon: FileText },
-    { href: '/dashboard/plan', label: 'Plan', icon: CreditCard },
+  const bottomItems = [
+    { href: '/dashboard',         label: 'Panel',    icon: LayoutDashboard, exact: true },
+    { href: '/dashboard/profile', label: 'Perfil',   icon: User },
+    { href: '/dashboard/gallery', label: 'Galería',  icon: Image },
+    { href: '/dashboard/reviews', label: 'Reseñas',  icon: Star, exact: true },
   ]
 
-  return (
-    <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border flex items-center">
-      {mobileItems.map(item => {
-        const Icon = item.icon
-        const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href))
-        const isLocked = item.href === '/dashboard/quotes' && plan === 'FREE'
+  function isActive(item: { href: string; exact?: boolean }) {
+    return item.exact
+      ? pathname === item.href
+      : pathname === item.href || pathname.startsWith(item.href + '/')
+  }
 
-        return (
-          <Link
-            key={item.href}
-            href={isLocked ? '/dashboard/plan' : item.href}
-            className={cn(
-              "flex-1 flex flex-col items-center gap-1 py-3 text-xs font-medium transition-colors",
-              isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <Icon className="w-5 h-5" />
-            <span>{item.label}</span>
-          </Link>
-        )
-      })}
-    </nav>
+  return (
+    <>
+      {/* ── BOTTOM BAR ── */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-sm border-t border-border flex items-stretch">
+        {bottomItems.map(item => {
+          const Icon = item.icon
+          const active = isActive(item)
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                "flex-1 flex flex-col items-center justify-center gap-1 py-3 text-[11px] font-medium transition-colors",
+                active ? "text-primary" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Icon className="w-5 h-5" />
+              <span>{item.label}</span>
+            </Link>
+          )
+        })}
+
+        {/* Hamburger */}
+        <button
+          onClick={() => setOpen(true)}
+          className="flex-1 flex flex-col items-center justify-center gap-1 py-3 text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <Menu className="w-5 h-5" />
+          <span>Más</span>
+        </button>
+      </nav>
+
+      {/* ── DRAWER ── */}
+      {open && (
+        <div className="lg:hidden fixed inset-0 z-50 flex justify-end">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={() => setOpen(false)}
+          />
+
+          {/* Panel */}
+          <div className="relative w-72 max-w-[85vw] bg-background flex flex-col h-full shadow-2xl border-l border-border animate-in slide-in-from-right duration-200">
+
+            {/* Header */}
+            <div className="flex items-center justify-between px-5 py-4 border-b border-border">
+              <span className="font-bold text-base">Menú</span>
+              <button
+                onClick={() => setOpen(false)}
+                className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* All nav items */}
+            <nav className="flex-1 overflow-y-auto p-3 space-y-0.5">
+              {NAV_ITEMS.map(item => {
+                const Icon = item.icon
+                const active = isActive(item)
+                const locked = item.planRequired && !item.planRequired.includes(plan) && !isTrialActive
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={locked ? '/dashboard/plan' : item.href}
+                    onClick={() => setOpen(false)}
+                    className={cn(
+                      "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                      active
+                        ? "bg-primary text-primary-foreground"
+                        : "text-muted-foreground hover:text-foreground hover:bg-accent",
+                      locked && "opacity-50"
+                    )}
+                  >
+                    <Icon className="w-4 h-4 shrink-0" />
+                    <span className="flex-1">{item.label}</span>
+                    {locked && (
+                      <span className="text-[10px] bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-semibold">
+                        {item.planRequired?.includes('PREMIUM') ? 'Premium' : 'Pro'}
+                      </span>
+                    )}
+                  </Link>
+                )
+              })}
+            </nav>
+
+            {/* Bottom links */}
+            <div className="p-4 border-t border-border space-y-1">
+              <Link
+                href="/"
+                onClick={() => setOpen(false)}
+                className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors"
+              >
+                <Home className="w-4 h-4" />
+                Ir al inicio
+              </Link>
+              {urlSlug && (
+                <Link
+                  href={`/i/${urlSlug}`}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:text-primary hover:bg-accent transition-colors"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                  Ver mi perfil público
+                </Link>
+              )}
+              {isAdmin && (
+                <Link
+                  href="/admin"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-semibold text-orange-500 hover:text-orange-400 hover:bg-accent transition-colors"
+                >
+                  <ShieldCheck className="w-4 h-4" />
+                  Panel de administración
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   )
 }

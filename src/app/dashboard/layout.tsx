@@ -42,7 +42,7 @@ export default async function DashboardLayout({
           <InstallerProvider>{children}</InstallerProvider>
         </div>
       </main>
-      <MobileBottomNav plan={installer.plan} />
+      <MobileBottomNav plan={installer.plan} urlSlug={installer.url_slug} isAdmin={isAdmin} trialEndsAt={installer.trial_ends_at} />
     </div>
   )
 }
