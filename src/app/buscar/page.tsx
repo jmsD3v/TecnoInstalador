@@ -1,5 +1,6 @@
 import { Suspense } from "react"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { createServiceRoleClient } from "@/lib/supabase/service"
 import { Navbar } from "@/components/layout/navbar"
 import { ResultsAnimated } from "@/components/marketplace/results-animated"
 import { sortInstallersByPlan } from "@/lib/plans"
@@ -18,7 +19,10 @@ interface Props {
 }
 
 async function Results({ searchParams }: { searchParams: SearchParams }) {
-  const supabase = await createServerSupabaseClient()
+  // Use service role so public search works regardless of auth state.
+  // anon role may lack table-level grants; service role bypasses RLS.
+  // We enforce is_active = true manually below.
+  const supabase = createServiceRoleClient()
   const { ciudad, provincia, trade } = searchParams
 
   if (!ciudad && !provincia) {
@@ -30,14 +34,21 @@ async function Results({ searchParams }: { searchParams: SearchParams }) {
     )
   }
 
+  // Use inner join only when filtering by trade (so the trade filter works correctly).
+  // Without a trade filter, use left join so installers without trades still appear.
+  const filteringByTrade = trade && trade !== 'todos'
+  const tradeSelect = filteringByTrade
+    ? `*, installer_trades!inner(trade:trades(*))`
+    : `*, installer_trades(trade:trades(*))`
+
   let query = supabase
     .from('installers')
-    .select(`*, installer_trades!inner(trade:trades(*))`)
+    .select(tradeSelect)
     .eq('is_active', true)
 
   if (ciudad) query = query.ilike('ciudad', `%${ciudad}%`)
   if (provincia && provincia !== 'todas') query = query.ilike('provincia', `%${provincia}%`)
-  if (trade && trade !== 'todos') query = query.eq('installer_trades.trade.slug', trade)
+  if (filteringByTrade) query = query.eq('installer_trades.trade.slug', trade)
 
   const { data: installers } = await query
 
