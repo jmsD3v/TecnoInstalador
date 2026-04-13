@@ -1,9 +1,12 @@
 import type { NextConfig } from "next"
 
+const isDev = process.env.NODE_ENV === 'development'
+
+// In production: no unsafe-eval. In dev: React needs eval() for debugging.
 export const CSP = [
   "default-src 'self'",
   "img-src 'self' data: blob: https://*.supabase.co",
-  "script-src 'self' 'unsafe-inline'",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
   "style-src 'self' 'unsafe-inline'",
   "font-src 'self'",
   "connect-src 'self' https://*.supabase.co https://api.mercadopago.com wss://*.supabase.co",
