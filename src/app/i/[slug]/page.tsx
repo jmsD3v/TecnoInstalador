@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation"
 import { Metadata } from "next"
-import { MapPin, Star, CheckCircle2, MessageCircle } from "lucide-react"
+import { MapPin, Star, CheckCircle2, MessageCircle, ArrowLeft } from "lucide-react"
+import Link from "next/link"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { createServiceRoleClient } from "@/lib/supabase/service"
 import { PlanBadge } from "@/components/ui/plan-badge"
 import { StarRating, InstallerAvatar } from "@/components/ui/avatar"
 import { CollapsibleReviews } from "@/components/installer/collapsible-reviews"
@@ -18,11 +20,12 @@ interface Props {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
-  const supabase = await createServerSupabaseClient()
+  const supabase = createServiceRoleClient()
   const { data } = await supabase
     .from('installers')
     .select('nombre, apellido, nombre_comercial, ciudad, descripcion')
     .eq('url_slug', slug)
+    .eq('is_active', true)
     .single()
 
   if (!data) return { title: 'Instalador no encontrado' }
@@ -35,8 +38,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function InstallerProfilePage({ params }: Props) {
   const { slug } = await params
-  const supabase = await createServerSupabaseClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  // Use auth client only for session (navbar), service role for public profile data
+  const authSupabase = await createServerSupabaseClient()
+  const { data: { user } } = await authSupabase.auth.getUser()
+  const supabase = createServiceRoleClient()
 
   const { data: installer } = await supabase
     .from('installers')
@@ -70,6 +75,14 @@ export default async function InstallerProfilePage({ params }: Props) {
   return (
     <div className="min-h-screen bg-background">
       <Navbar user={user} />
+
+      {/* ── BACK LINK ─────────────────────────────── */}
+      <div className="container max-w-2xl mx-auto px-4 pt-4">
+        <Link href="/buscar" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <ArrowLeft className="w-3.5 h-3.5" />
+          Buscar instaladores
+        </Link>
+      </div>
 
       {/* ── COVER ─────────────────────────────────── */}
       <div
@@ -156,7 +169,7 @@ export default async function InstallerProfilePage({ params }: Props) {
 
           {/* ── GALLERY ──────────────────────────────── */}
           {gallery.length > 0 && (
-            <div className="px-5 pb-5 border-t border-border">
+            <div className="px-5 pb-5 border-t border-border animate-in">
               <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mt-4 mb-3">
                 Galería
               </h2>
@@ -177,7 +190,7 @@ export default async function InstallerProfilePage({ params }: Props) {
 
           {/* ── TRADES ───────────────────────────────── */}
           {trades.length > 0 && (
-            <div className="px-5 pb-5 border-t border-border">
+            <div className="px-5 pb-5 border-t border-border animate-in">
               <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mt-4 mb-3">
                 Oficios
               </h2>
@@ -201,7 +214,7 @@ export default async function InstallerProfilePage({ params }: Props) {
 
           {/* ── SERVICES ─────────────────────────────── */}
           {services.length > 0 && (
-            <div className="px-5 pb-5 border-t border-border">
+            <div className="px-5 pb-5 border-t border-border animate-in">
               <h2 className="text-sm font-bold uppercase tracking-wider text-muted-foreground mt-4 mb-3">
                 Servicios destacados
               </h2>
