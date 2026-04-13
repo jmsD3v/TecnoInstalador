@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import { Metadata } from "next"
-import { MapPin, Star, CheckCircle2, MessageCircle, Share2 } from "lucide-react"
+import { MapPin, Star, CheckCircle2, MessageCircle, Share2, ArrowLeft } from "lucide-react"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { PlanBadge } from "@/components/ui/plan-badge"
 import { StarRating, InstallerAvatar } from "@/components/ui/avatar"
@@ -8,6 +8,7 @@ import { ReviewCard } from "@/components/reviews/review-card"
 import { WhatsAppCTA } from "@/components/installer/whatsapp-cta"
 import { COLOR_PALETTES } from "@/types"
 import { buildContactMessage } from "@/lib/utils"
+import Link from "next/link"
 import { Navbar } from "@/components/layout/navbar"
 
 interface Props {
@@ -68,6 +69,13 @@ export default async function InstallerProfilePage({ params }: Props) {
   return (
     <div className="min-h-screen bg-background">
       <Navbar user={user} />
+
+      <div className="container max-w-2xl mx-auto px-4 pt-4">
+        <Link href="/buscar" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <ArrowLeft className="w-3.5 h-3.5" />
+          Buscar instaladores
+        </Link>
+      </div>
 
       {/* ── COVER ─────────────────────────────────── */}
       <div

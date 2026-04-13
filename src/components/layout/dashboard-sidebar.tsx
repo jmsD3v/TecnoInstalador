@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge"
 interface SidebarProps {
   plan: PlanType
   trialEndsAt?: string | null
+  urlSlug?: string
 }
 
 interface NavItem {
@@ -45,7 +46,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/dashboard/plan', label: 'Mi plan', icon: CreditCard },
 ]
 
-export function DashboardSidebar({ plan, trialEndsAt }: SidebarProps) {
+export function DashboardSidebar({ plan, trialEndsAt, urlSlug }: SidebarProps) {
   const pathname = usePathname()
   const isTrialActive = trialEndsAt && new Date(trialEndsAt) > new Date()
 
@@ -104,9 +105,9 @@ export function DashboardSidebar({ plan, trialEndsAt }: SidebarProps) {
       {/* Bottom: view public profile */}
       <div className="p-4 border-t border-border">
         <p className="text-xs text-muted-foreground text-center">
-          <a href="#" className="hover:text-primary flex items-center justify-center gap-1">
+          <Link href={urlSlug ? `/i/${urlSlug}` : '#'} className="hover:text-primary flex items-center justify-center gap-1">
             Ver mi perfil público <ChevronRight className="w-3 h-3" />
-          </a>
+          </Link>
         </p>
       </div>
     </aside>

@@ -371,6 +371,10 @@ export default async function HomePage() {
             <span className="font-semibold text-foreground">TecnoInstalador</span>
           </div>
           <p>© {new Date().getFullYear()} TecnoInstalador. Todos los derechos reservados.</p>
+          <div className="flex items-center justify-center gap-4 mt-2">
+            <Link href="/legal/terminos" className="hover:text-foreground transition-colors">Términos y Condiciones</Link>
+            <Link href="/legal/privacidad" className="hover:text-foreground transition-colors">Privacidad</Link>
+          </div>
         </div>
       </footer>
     </div>
