@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <!-- Fondo -->
+  <rect width="32" height="32" rx="7" fill="#1d4ed8"/>
+  <!-- Casco: domo -->
+  <path d="M6 18 C6 18 6 9 16 9 C26 9 26 18 26 18 Z" fill="#fbbf24"/>
+  <!-- Casco: visera/borde inferior -->
+  <rect x="4" y="18" width="24" height="3" rx="1.5" fill="#f59e0b"/>
+  <!-- Casco: banda horizontal -->
+  <path d="M6 16 L26 16" stroke="#d97706" stroke-width="1.2" stroke-linecap="round"/>
+  <!-- Brillo -->
+  <path d="M11 12 Q15 10.5 19 12" stroke="white" stroke-width="1" fill="none" stroke-linecap="round" opacity="0.5"/>
+</svg>
