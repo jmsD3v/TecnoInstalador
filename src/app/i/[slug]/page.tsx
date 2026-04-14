@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation"
 import { Metadata } from "next"
-import { MapPin, Star, CheckCircle2, MessageCircle, ArrowLeft } from "lucide-react"
+import { MapPin, Star, CheckCircle2, ArrowLeft } from "lucide-react"
 import Link from "next/link"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { createServiceRoleClient } from "@/lib/supabase/service"
@@ -9,7 +9,6 @@ import { StarRating, InstallerAvatar } from "@/components/ui/avatar"
 import { CollapsibleReviews } from "@/components/installer/collapsible-reviews"
 import { WhatsAppCTA } from "@/components/installer/whatsapp-cta"
 import { COLOR_PALETTES } from "@/types"
-import { buildContactMessage } from "@/lib/utils"
 import { getTradeIcon } from "@/lib/trade-icons"
 import { Navbar } from "@/components/layout/navbar"
 import { SiteFooter } from "@/components/layout/site-footer"
@@ -81,9 +80,6 @@ export default async function InstallerProfilePage({ params }: Props) {
   const reviews  = (installer.reviews ?? []).filter((r: any) => r.is_public)
   const mainTrade = trades[0]?.nombre ?? 'Profesional'
 
-  const waUrl = `https://wa.me/${installer.whatsapp}?text=${encodeURIComponent(
-    buildContactMessage(displayName)
-  )}`
 
   const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.com'
   const profileUrl = `${APP_URL}/i/${installer.url_slug}`
@@ -309,16 +305,13 @@ export default async function InstallerProfilePage({ params }: Props) {
 
           {/* ── CTA INLINE ───────────────────────────── */}
           <div className="px-5 pb-5 pt-2 border-t border-border">
-            <a
-              href={waUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full py-4 rounded-xl text-white font-bold text-base transition-opacity hover:opacity-90 active:scale-[0.98]"
-              style={{ background: '#25d366' }}
-            >
-              <MessageCircle className="w-5 h-5" />
-              Pedir presupuesto por WhatsApp
-            </a>
+            <WhatsAppCTA
+              whatsapp={installer.whatsapp}
+              installerName={displayName}
+              installerId={installer.id}
+              label="Pedir presupuesto por WhatsApp"
+              fullWidth
+            />
           </div>
 
         </div>{/* end card */}
