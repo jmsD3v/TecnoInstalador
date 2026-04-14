@@ -416,21 +416,21 @@ export default function ProfilePage() {
                 <Input value={form.apellido} onChange={e => setForm(f => ({ ...f, apellido: e.target.value }))} required />
               </FormField>
             </div>
-            <FormField label="Nombre comercial" hint="Nombre que aparecerá en tu perfil público (opcional)">
+            <FormField label="Nombre comercial" hint="El nombre que verán tus clientes. Si trabajás solo, podés poner tu nombre y apellido. Ej: Electricidad Martínez, Plomería San Juan.">
               <Input
                 placeholder="Ej: Electricidad Martínez"
                 value={form.nombre_comercial}
                 onChange={e => setForm(f => ({ ...f, nombre_comercial: e.target.value }))}
               />
             </FormField>
-            <FormField label="Título profesional" hint="Ej: Oficial Eléctrico Especializado · Técnico en Redes · Gasista Matriculado">
+            <FormField label="Título profesional" hint="Tu especialidad en pocas palabras. Ej: Electricista Matriculado, Gasista Habilitado, Técnico en Redes. Aparece bajo tu nombre en el buscador.">
               <Input
                 placeholder="Ej: Oficial Eléctrico Especializado"
                 value={form.titulo_profesional}
                 onChange={e => setForm(f => ({ ...f, titulo_profesional: e.target.value }))}
               />
             </FormField>
-            <FormField label="Descripción" hint="Contá quién sos y qué hacés">
+            <FormField label="Descripción" hint="Contá quién sos, cuántos años de experiencia tenés y en qué zona trabajás. Cuanto más completa, mejor te encuentran los clientes.">
               <Textarea
                 placeholder="Soy electricista matriculado con 10 años de experiencia..."
                 value={form.descripcion}
@@ -447,7 +447,7 @@ export default function ProfilePage() {
             <CardTitle className="text-base">Ubicación</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <FormField label="Ciudad" required>
+            <FormField label="Ciudad" required hint="La ciudad o localidad donde ofrecés tus servicios principalmente.">
               <Input value={form.ciudad} onChange={e => setForm(f => ({ ...f, ciudad: e.target.value }))} required />
             </FormField>
             <div className="grid grid-cols-2 gap-4">
@@ -470,7 +470,7 @@ export default function ProfilePage() {
             <FormField label="Teléfono">
               <Input placeholder="011 1234-5678" value={form.telefono} onChange={e => setForm(f => ({ ...f, telefono: e.target.value }))} />
             </FormField>
-            <FormField label="WhatsApp" required hint="Número internacional sin + ni espacios: 5491112345678">
+            <FormField label="WhatsApp" required hint="Número completo sin espacios ni guiones. Para Argentina: 549 + código de área sin 0 + número sin 15. Ej: 5493624123456">
               <Input
                 placeholder="5491112345678"
                 value={form.whatsapp}
