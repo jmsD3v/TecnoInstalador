@@ -6,7 +6,7 @@ function isAdminEmail(email: string): boolean {
   return allowed.includes(email)
 }
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
