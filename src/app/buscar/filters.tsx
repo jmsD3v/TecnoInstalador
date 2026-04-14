@@ -134,7 +134,7 @@ export function MarketplaceFilters({ trades, initialParams }: Props) {
         </div>
 
         {/* Ciudad con autocomplete */}
-        <div className="flex-1 relative" ref={wrapperRef}>
+        <div className="flex-1 relative min-w-0" ref={wrapperRef}>
           <Input
             placeholder={provincia ? `Ciudad en ${provincia}...` : 'Ciudad o localidad...'}
             value={ciudad}
