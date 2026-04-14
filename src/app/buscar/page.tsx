@@ -102,10 +102,10 @@ export default async function BuscarPage({ searchParams }: Props) {
   const { data: trades } = await supabase.from('trades').select('*').order('nombre')
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Navbar user={user} />
 
-      <div className="container mx-auto px-4 py-6 md:py-10">
+      <div className="flex-1 container mx-auto px-4 py-6 md:py-10">
         <div className="max-w-5xl mx-auto">
           <h1 className="text-3xl font-extrabold mb-2">Buscá un instalador</h1>
           <p className="text-muted-foreground mb-6">
