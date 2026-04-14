@@ -2,6 +2,7 @@ import { redirect } from "next/navigation"
 import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { DashboardSidebar, MobileBottomNav } from "@/components/layout/dashboard-sidebar"
 import { InstallerProvider } from "@/contexts/installer-context"
+import { ProfileProgress } from "@/components/dashboard/profile-progress"
 
 export default async function DashboardLayout({
   children,
@@ -18,7 +19,7 @@ export default async function DashboardLayout({
 
   const { data: installer } = await supabase
     .from('installers')
-    .select('plan, trial_ends_at, url_slug, onboarding_completed')
+    .select('plan, trial_ends_at, url_slug, onboarding_completed, foto_perfil_url, descripcion, ciudad, whatsapp, installer_trades(id), installer_services(id)')
     .eq('user_id', user.id)
     .single()
 
@@ -36,7 +37,13 @@ export default async function DashboardLayout({
 
   return (
     <div className="flex min-h-screen bg-muted/20">
-      <DashboardSidebar plan={installer.plan} trialEndsAt={installer.trial_ends_at} urlSlug={installer.url_slug} isAdmin={isAdmin} />
+      <DashboardSidebar
+        plan={installer.plan}
+        trialEndsAt={installer.trial_ends_at}
+        urlSlug={installer.url_slug}
+        isAdmin={isAdmin}
+        profileProgress={<ProfileProgress installer={installer as any} />}
+      />
       <main className="flex-1 flex flex-col">
         <div className="flex-1 p-4 md:p-6 pb-24 lg:pb-6">
           <InstallerProvider>{children}</InstallerProvider>

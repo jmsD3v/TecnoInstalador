@@ -17,6 +17,7 @@ interface SidebarProps {
   trialEndsAt?: string | null
   urlSlug?: string
   isAdmin?: boolean
+  profileProgress?: React.ReactNode
 }
 
 interface NavItem {
@@ -50,7 +51,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/dashboard/plan', label: 'Mi plan', icon: CreditCard },
 ]
 
-export function DashboardSidebar({ plan, trialEndsAt, urlSlug, isAdmin }: SidebarProps) {
+export function DashboardSidebar({ plan, trialEndsAt, urlSlug, isAdmin, profileProgress }: SidebarProps) {
   const pathname = usePathname()
   const isTrialActive = trialEndsAt && new Date(trialEndsAt) > new Date()
 
@@ -74,6 +75,9 @@ export function DashboardSidebar({ plan, trialEndsAt, urlSlug, isAdmin }: Sideba
           </p>
         )}
       </div>
+
+      {/* Profile progress */}
+      {profileProgress}
 
       {/* Nav */}
       <nav className="flex-1 p-3 flex flex-col gap-1">
