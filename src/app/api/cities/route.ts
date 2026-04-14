@@ -4,7 +4,7 @@ export async function GET(req: NextRequest) {
   const q = req.nextUrl.searchParams.get('q')?.trim() ?? ''
   const provincia = req.nextUrl.searchParams.get('provincia')?.trim() ?? ''
 
-  if (!q || q.length < 4) return NextResponse.json([])
+  if (!q || q.length < 3) return NextResponse.json([])
 
   try {
     const params = new URLSearchParams({ max: '10', campos: 'nombre,provincia.nombre' })

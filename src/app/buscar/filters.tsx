@@ -37,7 +37,7 @@ export function MarketplaceFilters({ trades, initialParams }: Props) {
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current)
 
-    const hasQuery = ciudad.trim().length >= 4
+    const hasQuery = ciudad.trim().length >= 3
     const hasProvincia = provincia !== ''
 
     if (!hasQuery) {
@@ -136,7 +136,7 @@ export function MarketplaceFilters({ trades, initialParams }: Props) {
         {/* Ciudad con autocomplete */}
         <div className="flex-1 relative" ref={wrapperRef}>
           <Input
-            placeholder={provincia ? `Ciudad en ${provincia} (mín. 4 letras)` : 'Ciudad (mín. 4 letras)'}
+            placeholder={provincia ? `Ciudad en ${provincia}...` : 'Ciudad o localidad...'}
             value={ciudad}
             onChange={e => { setCiudad(e.target.value); setShowSuggestions(true) }}
             onKeyDown={handleKeyDown}
