@@ -9,6 +9,8 @@ import {
   IconCamera, IconHammer, IconSolarPanel, IconDeviceDesktop,
   IconRouter, IconDeviceMobile, IconPlant,
   IconPaint, IconKey, IconBug, IconSmartHome, IconBuilding, IconEngine,
+  IconRotate, IconTool, IconArmchair, IconMotorbike, IconSnowflake,
+  IconWashMachine, IconPaw, IconBuildingSkyscraper,
 } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -35,9 +37,17 @@ const TRADES = [
   { icon: IconDeviceMobile,    label: "Tec. Celulares",   gradient: "from-pink-400 to-rose-500",       shadow: "shadow-pink-500/20" },
   { icon: IconSolarPanel,      label: "Energía Solar",    gradient: "from-yellow-300 to-orange-400",   shadow: "shadow-yellow-400/20" },
   { icon: IconPlant,           label: "Jardinero",        gradient: "from-emerald-400 to-green-500",   shadow: "shadow-emerald-500/20" },
-  { icon: IconBuilding,        label: "Techista",         gradient: "from-stone-500 to-stone-700",     shadow: "shadow-stone-500/20" },
-  { icon: IconSmartHome,       label: "Domótica",         gradient: "from-indigo-400 to-violet-600",   shadow: "shadow-indigo-500/20" },
-  { icon: IconBug,             label: "Fumigador",        gradient: "from-green-600 to-emerald-700",   shadow: "shadow-green-500/20" },
+  { icon: IconBuilding,           label: "Techista",              gradient: "from-stone-500 to-stone-700",     shadow: "shadow-stone-500/20" },
+  { icon: IconSmartHome,          label: "Domótica",              gradient: "from-indigo-400 to-violet-600",   shadow: "shadow-indigo-500/20" },
+  { icon: IconBug,                label: "Fumigador",             gradient: "from-green-600 to-emerald-700",   shadow: "shadow-green-500/20" },
+  { icon: IconRotate,             label: "Bobinador",             gradient: "from-yellow-500 to-orange-600",   shadow: "shadow-yellow-500/20" },
+  { icon: IconTool,               label: "Tornero",               gradient: "from-slate-400 to-gray-600",      shadow: "shadow-slate-500/20" },
+  { icon: IconArmchair,           label: "Tapicero",              gradient: "from-rose-300 to-pink-500",       shadow: "shadow-rose-500/20" },
+  { icon: IconMotorbike,          label: "Mec. de Motos",         gradient: "from-zinc-500 to-slate-700",      shadow: "shadow-zinc-500/20" },
+  { icon: IconSnowflake,          label: "Tec. Heladeras",        gradient: "from-sky-300 to-blue-500",        shadow: "shadow-sky-500/20" },
+  { icon: IconWashMachine,        label: "Tec. Lavarropas",       gradient: "from-blue-400 to-indigo-600",     shadow: "shadow-blue-500/20" },
+  { icon: IconPaw,                label: "Vet. a Domicilio",      gradient: "from-amber-400 to-orange-500",    shadow: "shadow-amber-500/20" },
+  { icon: IconBuildingSkyscraper, label: "Maestro Mayor",         gradient: "from-stone-500 to-neutral-700",   shadow: "shadow-stone-500/20" },
 ]
 
 const FEATURES = [
