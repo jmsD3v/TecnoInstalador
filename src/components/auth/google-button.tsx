@@ -14,6 +14,9 @@ export function GoogleAuthButton({ label = "Continuar con Google" }: { label?: s
       provider: 'google',
       options: {
         redirectTo: `${window.location.origin}/auth/callback`,
+        queryParams: {
+          prompt: 'select_account',
+        },
       },
     })
     // No seteamos loading(false) porque el browser redirige
