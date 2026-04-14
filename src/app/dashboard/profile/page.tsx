@@ -10,6 +10,7 @@ import { COLOR_PALETTES, ColorPalette } from "@/types"
 import { InstallerAvatar } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 import { Check, Camera, X } from "lucide-react"
+import { DeleteAccountButton } from "@/components/dashboard/delete-account-button"
 import { Skeleton } from "@/components/ui/skeleton"
 
 export default function ProfilePage() {
@@ -514,6 +515,12 @@ export default function ProfilePage() {
           Guardar cambios
         </Button>
       </form>
+
+      {/* ── ZONA DE PELIGRO ────────────────────────── */}
+      <div className="pt-6 border-t border-border">
+        <p className="text-xs text-muted-foreground mb-3 uppercase tracking-wider font-semibold">Zona de peligro</p>
+        <DeleteAccountButton />
+      </div>
     </div>
   )
 }
