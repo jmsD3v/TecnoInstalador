@@ -66,27 +66,18 @@ export default function ReviewPage() {
 
     setSubmitting(true)
 
-    // Insert review
-    const { error: reviewError } = await supabase.from('reviews').insert({
-      installer_id: invite.installer_id,
-      rating,
-      comentario: comentario || null,
-      client_name: clientName || null,
-      is_public: true,
-      source: 'link_unico',
+    const res = await fetch('/api/reviews/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token, rating, comentario, clientName }),
     })
 
-    if (reviewError) {
-      toast({ title: 'Error al enviar', description: reviewError.message, variant: 'error' })
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}))
+      toast({ title: 'Error al enviar', description: json.error ?? 'Intentá de nuevo', variant: 'error' })
       setSubmitting(false)
       return
     }
-
-    // Mark invite as used
-    await supabase
-      .from('review_invites')
-      .update({ used_at: new Date().toISOString() })
-      .eq('token_unico', token)
 
     setSubmitted(true)
     setSubmitting(false)
