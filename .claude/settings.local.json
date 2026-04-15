@@ -20,7 +20,13 @@
       "Bash(curl -s \"https://apis.datos.gob.ar/georef/api/localidades?nombre=Re&max=10&campos=nombre,provincia.nombre\")",
       "Bash(find:*)",
       "Bash(pnpm add:*)",
-      "Bash(pnpm build:*)"
+      "Bash(pnpm build:*)",
+      "Bash(pnpm list:*)",
+      "Bash(node scripts/generate-icons.mjs)"
     ]
-  }
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "supabase"
+  ]
 }

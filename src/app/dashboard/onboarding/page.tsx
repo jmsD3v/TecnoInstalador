@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Zap, Droplets, Flame, Wind, Monitor, Wifi, Camera, Smartphone, Package, Sun, HardHat, Hammer } from 'lucide-react'
+import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
 const TRADE_OPTIONS = [
@@ -117,6 +118,20 @@ export default function OnboardingPage() {
               disabled={saving} onClick={handleFinish}>
               {saving ? 'Guardando...' : 'Ir a mi dashboard →'}
             </button>
+
+            {/* PRO upsell */}
+            <Link
+              href="/dashboard/plan"
+              className="flex items-center gap-3 p-4 rounded-xl border-2 border-primary/30 bg-primary/5 hover:bg-primary/10 hover:border-primary/50 transition-all text-left group"
+            >
+              <div className="w-9 h-9 bg-primary/15 rounded-lg flex items-center justify-center shrink-0">
+                <Zap className="w-5 h-5 text-primary" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-foreground">Con PRO aparecés primero en búsquedas</p>
+                <p className="text-xs text-muted-foreground">Hasta 3 oficios, galería de fotos, presupuestos digitales →</p>
+              </div>
+            </Link>
           </div>
         )}
       </div>
