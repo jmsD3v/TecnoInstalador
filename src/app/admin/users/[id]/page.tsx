@@ -9,11 +9,12 @@ async function getInstaller(id: string) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('installers')
-    .select(`*, subscriptions(status, plan, billing_period, next_payment_date)`)
+    .select(`*, subscriptions!installer_id(status, plan, billing_period, next_payment_date)`)
     .eq('id', id)
     .single()
+  if (error) console.error('[admin/users/[id]] query error:', error.message, '| id:', id)
   return data
 }
 

@@ -2972,3 +2972,64 @@ After all sprints are complete:
 | `src/app/page.tsx` | Modify | 4 |
 | `src/app/buscar/page.tsx` | Modify | 4 |
 | `src/app/dashboard/reviews/page.tsx` | Modify | 4 |
+
+---
+
+## Sprint 5 — Security Hardening
+
+> **Source:** Cyber Neo security audit — 2026-04-16
+> **Report:** `~/Desktop/cyber-neo-report-tecnoinstalador-2026-04-16.md`
+> **Risk score before:** 50/100 (High Risk)
+> **Status:** ✅ Implemented — `pnpm build` passing
+
+### Task S1: Fix JSON-LD XSS (CN-003 — HIGH)
+
+**File:** `src/app/i/[slug]/page.tsx`
+
+- [x] Escape `</script>` sequences in JSON-LD output via `.replace(/<\/script>/gi, '<\/script>')`
+
+### Task S2: Fix User Deactivation Auth Bypass (CN-006 — HIGH)
+
+**File:** `src/app/api/admin/users/[id]/toggle-active/route.ts`
+
+- [x] Fetch `user_id` from installers table before update
+- [x] Call `supabase.auth.admin.updateUserById(user_id, { ban_duration })` — deactivated users now banned at Auth level (can't log in)
+
+### Task S3: Harden WhatsApp Click Tracking (CN-004, CN-005 — HIGH/MEDIUM)
+
+**File:** `src/app/api/track/whatsapp-click/route.ts`
+
+- [x] `pnpm add lru-cache`
+- [x] UUID validation with Zod
+- [x] Verify installer is active before incrementing
+- [x] IP-based rate limit: 5 requests / 60s window
+
+### Task S4: Remove Unused Vulnerable Dependencies (CN-007, CN-002 — HIGH/MEDIUM)
+
+**File:** `package.json`
+
+- [x] `pnpm remove next-pwa` — unused (sw.js is manual), had serialize-javascript CVEs
+- [x] `pnpm remove boneyard-monorepo` — zero imports in src/, supply chain risk
+
+### Task S5: Fix Open Redirect (CN-008 — LOW)
+
+**File:** `src/app/auth/callback/route.ts`
+
+- [x] Reject `//`-prefixed protocol-relative URLs in `next` param
+
+### Task S6: CSP Nonce (CN-001 — MEDIUM, Sprint 6)
+
+- [ ] Create `src/middleware.ts` — generate per-request nonce via `crypto.randomBytes(16).toString('base64')`
+- [ ] Replace `unsafe-inline` in `next.config.ts` CSP with `'nonce-{value}'`
+- [ ] Pass nonce via response header `x-nonce` to root layout
+- [ ] Apply nonce to all `<script>` / `<style>` elements in layout
+
+### File map — Sprint 5
+
+| File | Action | Task |
+|------|--------|------|
+| `src/app/i/[slug]/page.tsx` | Modify | S1 |
+| `src/app/api/admin/users/[id]/toggle-active/route.ts` | Modify | S2 |
+| `src/app/api/track/whatsapp-click/route.ts` | Modify | S3 |
+| `package.json` | Modify | S4 |
+| `src/app/auth/callback/route.ts` | Modify | S5 |

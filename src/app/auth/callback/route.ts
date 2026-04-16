@@ -5,7 +5,9 @@ import { slugify } from '@/lib/utils'
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/dashboard'
+  const rawNext = searchParams.get('next') ?? '/dashboard'
+  // Reject protocol-relative URLs (//evil.com) — only allow relative paths starting with /
+  const next = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/dashboard'
 
   if (!code) {
     return NextResponse.redirect(`${origin}/auth/login?error=missing_code`)
