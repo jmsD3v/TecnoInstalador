@@ -1,25 +1,13 @@
 import type { NextConfig } from "next"
 
-const isDev = process.env.NODE_ENV === 'development'
-
-// In production: no unsafe-eval. In dev: React needs eval() for debugging.
-export const CSP = [
-  "default-src 'self'",
-  "img-src 'self' data: blob: https://*.supabase.co",
-  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ''}`,
-  "style-src 'self' 'unsafe-inline'",
-  "font-src 'self'",
-  "connect-src 'self' https://*.supabase.co https://api.mercadopago.com wss://*.supabase.co",
-  "frame-ancestors 'none'",
-].join('; ')
-
+// CSP is now set per-request by src/proxy.ts (middleware) with a unique nonce.
+// Only non-CSP security headers are set statically here.
 const securityHeaders = [
   { key: 'X-Frame-Options', value: 'DENY' },
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
   { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
-  { key: 'Content-Security-Policy', value: CSP },
 ]
 
 const nextConfig: NextConfig = {

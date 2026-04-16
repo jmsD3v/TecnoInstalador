@@ -1,13 +1,35 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
+const isDev = process.env.NODE_ENV === 'development'
+
+function buildCSP(nonce: string): string {
+  return [
+    "default-src 'self'",
+    "img-src 'self' data: blob: https://*.supabase.co",
+    // Nonce-based CSP: no unsafe-inline. strict-dynamic propagates trust to dynamically loaded scripts.
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ''}`,
+    "style-src 'self' 'unsafe-inline'",
+    "font-src 'self'",
+    "connect-src 'self' https://*.supabase.co https://api.mercadopago.com wss://*.supabase.co",
+    "frame-ancestors 'none'",
+  ].join('; ')
+}
+
 function isAdminEmail(email: string): boolean {
   const allowed = (process.env.ADMIN_EMAILS ?? '').split(',').map(e => e.trim()).filter(Boolean)
   return allowed.includes(email)
 }
 
 export async function proxy(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request })
+  // Generate a per-request nonce for Content-Security-Policy
+  const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
+
+  // Forward nonce to Server Components via request headers (readable via headers() from next/headers)
+  const headersWithNonce = new Headers(request.headers)
+  headersWithNonce.set('x-nonce', nonce)
+
+  let supabaseResponse = NextResponse.next({ request: { headers: headersWithNonce } })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,8 +40,9 @@ export async function proxy(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
+          // Apply cookies to a new copy of the request; preserve x-nonce in forwarded headers
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
-          supabaseResponse = NextResponse.next({ request })
+          supabaseResponse = NextResponse.next({ request: { headers: headersWithNonce } })
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           )
@@ -28,10 +51,10 @@ export async function proxy(request: NextRequest) {
     }
   )
 
-  // Refresh session
+  // Refresh session (required by Supabase SSR to keep session alive)
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Admin routes — fail closed, no error message
+  // Admin routes — fail closed
   if (request.nextUrl.pathname.startsWith('/admin')) {
     if (!user || !isAdminEmail(user.email ?? '')) {
       return NextResponse.redirect(new URL('/', request.url))
@@ -52,7 +75,11 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL('/dashboard', request.url))
   }
 
+  // Set nonce and CSP on the final response
+  supabaseResponse.headers.set('x-nonce', nonce)
   supabaseResponse.headers.set('x-pathname', request.nextUrl.pathname)
+  supabaseResponse.headers.set('Content-Security-Policy', buildCSP(nonce))
+
   return supabaseResponse
 }
 

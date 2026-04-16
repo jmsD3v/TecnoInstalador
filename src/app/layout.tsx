@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next"
 import localFont from "next/font/local"
+import { headers } from "next/headers"
 import "./globals.css"
 import { ToastContextProvider } from "@/components/ui/toast"
 import { ThemeProvider } from "@/components/theme/theme-provider"
@@ -72,15 +73,19 @@ export const viewport: Viewport = {
   maximumScale: 1,
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+  // Read nonce injected by proxy.ts middleware — needed for CSP compliance
+  const nonce = (await headers()).get('x-nonce') ?? undefined
+
   return (
     <html lang="es" suppressHydrationWarning className={monaspaceKrypton.variable}>
       <head>
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
-        {/* Script anti-flash: aplica el tema guardado antes de que React hidrate */}
-        <script dangerouslySetInnerHTML={{ __html:
+        {/* Script anti-flash: aplica el tema guardado antes de que React hidrate.
+            nonce= required for Content-Security-Policy (no unsafe-inline in script-src) */}
+        <script nonce={nonce} dangerouslySetInnerHTML={{ __html:
           `(function(){var t=localStorage.getItem('theme')||'dark';` +
           `document.documentElement.classList.add(t==='dark'?'dark':'light')})()`
         }} />
