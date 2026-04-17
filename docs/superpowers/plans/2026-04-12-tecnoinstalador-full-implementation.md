@@ -3033,3 +3033,32 @@ After all sprints are complete:
 | `src/app/api/track/whatsapp-click/route.ts` | Modify | S3 |
 | `package.json` | Modify | S4 |
 | `src/app/auth/callback/route.ts` | Modify | S5 |
+
+---
+
+## Sprint 6 — Roadmap de Producto (análisis 2026-04-16)
+
+> Funcionalidades faltantes identificadas post-auditoría de producto.
+
+### 🔴 Crítico (prometido o bloqueante)
+- **S6-SEO**: Páginas SEO programáticas por oficio × ciudad (`/electricistas-en-cordoba`)
+- **S6-DOMAIN**: Dominios personalizados Premium — flujo setup + routing
+- **S6-VERIFY**: Verificación de profesionales — proceso + badge real
+
+### 🟠 Lanzamiento
+- **S6-PAGINATE**: Paginación/infinite scroll en `/buscar`
+- **S6-NOTIF**: Notificaciones in-app + respuesta a reseñas
+- **S6-ADMIN+**: Panel admin: cambio manual de plan, override trial, historial pagos
+- **S6-MONITOR**: Sentry + Google Analytics / Plausible
+
+### 🟡 Post-lanzamiento
+- **S6-STATS+**: Stats ricas (comparación períodos, tasa conversión, origen visitas)
+- **S6-WA-EMAIL**: Email al instalador cuando alguien hace click en WhatsApp
+- **S6-SEARCH+**: Búsqueda por keyword en `/buscar`
+
+### 💡 Futuro
+- **S6-AVAIL**: Disponibilidad del profesional en perfil público
+- **S6-GALLERY+**: Galería con título + descripción + oficio por foto (contenido SEO)
+- **S6-REFERRAL**: Sistema de referidos (mes PRO gratis por instalador referido)
+- **S6-QUOTE-FORM**: Formulario de cotización rápida antes del WhatsApp
+- **S6-TEAMS**: Perfiles multi-usuario para empresas/equipos
