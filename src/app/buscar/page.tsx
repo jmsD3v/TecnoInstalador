@@ -3,11 +3,13 @@ import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { createServiceRoleClient } from "@/lib/supabase/service"
 import { Navbar } from "@/components/layout/navbar"
 import { SiteFooter } from "@/components/layout/site-footer"
-import { ResultsAnimated } from "@/components/marketplace/results-animated"
+import { LoadMore } from "@/components/marketplace/load-more"
 import { sortInstallersByPlan } from "@/lib/plans"
 import { Search } from "lucide-react"
 import { MarketplaceFilters } from "./filters"
 import { InstallerCardSkeleton } from "@/components/skeletons/installer-card-skeleton"
+
+const PAGE_SIZE = 12
 
 interface SearchParams {
   ciudad?: string
@@ -20,9 +22,6 @@ interface Props {
 }
 
 async function Results({ searchParams }: { searchParams: SearchParams }) {
-  // Use service role so public search works regardless of auth state.
-  // anon role may lack table-level grants; service role bypasses RLS.
-  // We enforce is_active = true manually below.
   const supabase = createServiceRoleClient()
   const { ciudad, provincia, trade } = searchParams
 
@@ -35,8 +34,6 @@ async function Results({ searchParams }: { searchParams: SearchParams }) {
     )
   }
 
-  // Use inner join only when filtering by trade (so the trade filter works correctly).
-  // Without a trade filter, use left join so installers without trades still appear.
   const filteringByTrade = trade && trade !== 'todos'
   const tradeSelect = filteringByTrade
     ? `*, installer_trades!inner(trade:trades(*))`
@@ -52,7 +49,6 @@ async function Results({ searchParams }: { searchParams: SearchParams }) {
   if (filteringByTrade) query = query.eq('installer_trades.trade.slug', trade)
 
   const { data: installers } = await query
-
   const location = [ciudad, provincia && provincia !== 'todas' ? provincia : ''].filter(Boolean).join(', ')
 
   if (!installers || installers.length === 0) {
@@ -66,14 +62,16 @@ async function Results({ searchParams }: { searchParams: SearchParams }) {
   }
 
   const sorted = sortInstallersByPlan(installers as any)
+  const firstPage = sorted.slice(0, PAGE_SIZE)
+  const hasMore = sorted.length > PAGE_SIZE
 
   return (
-    <div>
-      <p className="text-sm text-muted-foreground mb-4">
-        {sorted.length} resultado(s) en <strong>{location}</strong>
-      </p>
-      <ResultsAnimated installers={sorted as any} />
-    </div>
+    <LoadMore
+      initialInstallers={firstPage}
+      hasMore={hasMore}
+      total={sorted.length}
+      searchParams={searchParams}
+    />
   )
 }
 
@@ -117,9 +115,7 @@ export default async function BuscarPage({ searchParams }: Props) {
           <div className="mt-8">
             <Suspense fallback={
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <InstallerCardSkeleton key={i} />
-                ))}
+                {Array.from({ length: 6 }).map((_, i) => <InstallerCardSkeleton key={i} />)}
               </div>
             }>
               <Results searchParams={params} />
