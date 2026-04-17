@@ -15,8 +15,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${base}/legal/privacidad`,lastModified: now, changeFrequency: 'yearly',  priority: 0.2 },
   ]
 
-  // Installer profiles — high value pages for long-tail SEO
   const supabase = createServiceRoleClient()
+
+  // Installer profiles
   const { data: installers } = await supabase
     .from('installers')
     .select('url_slug, updated_at')
@@ -30,5 +31,35 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  return [...statics, ...profiles]
+  // SEO landing pages: /buscar/[trade]/[ciudad]
+  const { data: tradeCity } = await supabase
+    .from('installers')
+    .select('ciudad, installer_trades!inner(trade:trades(slug))')
+    .eq('is_active', true)
+    .not('ciudad', 'is', null)
+
+  const { slugify } = await import('@/lib/utils')
+  const seen = new Set<string>()
+  const seoLandings: MetadataRoute.Sitemap = []
+
+  for (const inst of tradeCity ?? []) {
+    const city = (inst.ciudad ?? '').trim()
+    if (!city) continue
+    const ciudadSlug = slugify(city)
+    for (const it of (inst.installer_trades as any[]) ?? []) {
+      const tradeSlug = it.trade?.slug
+      if (!tradeSlug) continue
+      const key = `${tradeSlug}/${ciudadSlug}`
+      if (seen.has(key)) continue
+      seen.add(key)
+      seoLandings.push({
+        url: `${base}/buscar/${tradeSlug}/${ciudadSlug}`,
+        lastModified: now,
+        changeFrequency: 'weekly',
+        priority: 0.85,
+      })
+    }
+  }
+
+  return [...statics, ...seoLandings, ...profiles]
 }
