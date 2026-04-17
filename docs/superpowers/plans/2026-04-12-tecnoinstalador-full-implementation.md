@@ -3017,12 +3017,12 @@ After all sprints are complete:
 
 - [x] Reject `//`-prefixed protocol-relative URLs in `next` param
 
-### Task S6: CSP Nonce (CN-001 — MEDIUM, Sprint 6)
+### Task S6: CSP Nonce (CN-001 — MEDIUM, Sprint 6) ✅
 
-- [ ] Create `src/middleware.ts` — generate per-request nonce via `crypto.randomBytes(16).toString('base64')`
-- [ ] Replace `unsafe-inline` in `next.config.ts` CSP with `'nonce-{value}'`
-- [ ] Pass nonce via response header `x-nonce` to root layout
-- [ ] Apply nonce to all `<script>` / `<style>` elements in layout
+- [x] `src/proxy.ts` (middleware) — per-request nonce via `crypto.randomBytes(16).toString('base64')`
+- [x] Replace `unsafe-inline` in CSP with `'nonce-{nonce}' 'strict-dynamic'`
+- [x] Pass nonce via `x-nonce` response header → root layout reads it
+- [x] Anti-flash inline script in layout uses nonce
 
 ### File map — Sprint 5
 
@@ -3041,24 +3041,24 @@ After all sprints are complete:
 > Funcionalidades faltantes identificadas post-auditoría de producto.
 
 ### 🔴 Crítico (prometido o bloqueante)
-- **S6-SEO**: Páginas SEO programáticas por oficio × ciudad (`/electricistas-en-cordoba`)
+- **S6-SEO** ✅: Páginas SEO programáticas por oficio × ciudad (`/buscar/[trade]/[ciudad]`) + sitemap
 - **S6-DOMAIN**: Dominios personalizados Premium — flujo setup + routing
-- **S6-VERIFY**: Verificación de profesionales — proceso + badge real
+- **S6-VERIFY** ✅: Verificación de profesionales — upload docs + admin approve/reject + badge en perfil + email notif
 
 ### 🟠 Lanzamiento
-- **S6-PAGINATE**: Paginación/infinite scroll en `/buscar`
-- **S6-NOTIF**: Notificaciones in-app + respuesta a reseñas
-- **S6-ADMIN+**: Panel admin: cambio manual de plan, override trial, historial pagos
-- **S6-MONITOR**: Sentry + Google Analytics / Plausible
+- **S6-PAGINATE** ✅: Infinite scroll en `/buscar` (IntersectionObserver, PAGE_SIZE=12, `/api/buscar`)
+- **S6-NOTIF** ✅: Notificaciones in-app (tabla notifications, badge en sidebar, página /dashboard/notifications, mark-as-read) + respuesta a reseñas (reply_from_installer ya existía, mostrado en ReviewCard y perfil público)
+- **S6-ADMIN+** ✅: Cambio manual de plan (FREE/PRO/PREMIUM), override trial_ends_at + plan_expires_at, historial suscripciones MP en /admin/users/[id]
+- **S6-MONITOR** ✅: Sentry 10.49 (`@sentry/nextjs`, `instrumentation.ts`, `global-error.tsx`, `withSentryConfig`) + Plausible Analytics (nonce-aware). Env vars: `NEXT_PUBLIC_SENTRY_DSN`, `SENTRY_AUTH_TOKEN`, `NEXT_PUBLIC_PLAUSIBLE_DOMAIN`.
 
 ### 🟡 Post-lanzamiento
-- **S6-STATS+**: Stats ricas (comparación períodos, tasa conversión, origen visitas)
-- **S6-WA-EMAIL**: Email al instalador cuando alguien hace click en WhatsApp
-- **S6-SEARCH+**: Búsqueda por keyword en `/buscar`
+- **S6-STATS+** ✅: Selector 7/30/90 días, comparación período anterior con % change, mejor día, gráfico mejorado con Legend
+- **S6-WA-EMAIL** ✅: Email al instalador al primer click WA, throttle 2h por instalador (`wa_email_last_sent_at`)
+- **S6-SEARCH+** ✅: Input keyword en `/buscar`, filtra nombre/apellido/nombre_comercial/titulo_profesional/descripcion con `ilike`, también en `/api/buscar`
 
 ### 💡 Futuro
-- **S6-AVAIL**: Disponibilidad del profesional en perfil público
-- **S6-GALLERY+**: Galería con título + descripción + oficio por foto (contenido SEO)
-- **S6-REFERRAL**: Sistema de referidos (mes PRO gratis por instalador referido)
-- **S6-QUOTE-FORM**: Formulario de cotización rápida antes del WhatsApp
-- **S6-TEAMS**: Perfiles multi-usuario para empresas/equipos
+- **S6-AVAIL** ✅: Campo `availability_status` (available/busy/on_demand), selector en perfil dashboard, badge en perfil público
+- **S6-GALLERY+** ✅: `titulo`+`descripcion` ya existían en DB y dashboard. Hover overlay en perfil público muestra título y descripción
+- **S6-REFERRAL** ✅: `referral_code`+`referred_by` en DB, captura en registro (`?ref=`), `/dashboard/referral` con link único, contador de referidos, lógica de reward (30d PRO) pendiente de trigger en payment
+- **S6-QUOTE-FORM** ✅: Modal `QuoteModal` antes de WhatsApp, form nombre+descripción, email al instalador vía `/api/track/quote-request`, mensaje pre-armado en WA
+- **S6-TEAMS**: Perfiles multi-usuario para empresas/equipos — demasiado complejo, backlog futuro

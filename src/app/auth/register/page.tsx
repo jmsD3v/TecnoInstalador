@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Wrench } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input, FormField } from "@/components/ui/input"
@@ -17,7 +17,11 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const router = useRouter()
+  const searchParams = useSearchParams()
   const toast = useToast()
+
+  // Referral code from URL (?ref=XXXXXXXX)
+  const [referralCode] = useState(() => searchParams.get('ref') ?? '')
   const supabase = createClient()
 
   // Step 1: auth
@@ -78,6 +82,20 @@ export default function RegisterPage() {
     const randomSuffix = Math.floor(Math.random() * 9000 + 1000)
     const url_slug = `${baseSlug}-${randomSuffix}`
 
+    // Resolve referral code to installer_id
+    let referred_by: string | null = null
+    if (referralCode) {
+      const { data: referrer } = await supabase
+        .from('installers')
+        .select('id')
+        .eq('referral_code', referralCode)
+        .single()
+      referred_by = referrer?.id ?? null
+    }
+
+    // Generate unique referral code for this new installer
+    const newReferralCode = Math.random().toString(36).slice(2, 10).toLowerCase()
+
     const { error } = await supabase.from('installers').insert({
       user_id: userId,
       nombre,
@@ -93,6 +111,8 @@ export default function RegisterPage() {
       dominio_personalizado_activo: false,
       total_reviews: 0,
       avg_rating: 0,
+      referred_by,
+      referral_code: newReferralCode,
     })
 
     if (error) {

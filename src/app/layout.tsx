@@ -4,6 +4,7 @@ import { headers } from "next/headers"
 import "./globals.css"
 import { ToastContextProvider } from "@/components/ui/toast"
 import { ThemeProvider } from "@/components/theme/theme-provider"
+import { PlausibleAnalytics } from "@/components/analytics/plausible"
 
 const monaspaceKrypton = localFont({
   src: [
@@ -89,6 +90,7 @@ export default async function RootLayout({
           `(function(){var t=localStorage.getItem('theme')||'dark';` +
           `document.documentElement.classList.add(t==='dark'?'dark':'light')})()`
         }} />
+        <PlausibleAnalytics nonce={nonce} />
       </head>
       <body className="antialiased bg-background text-foreground">
         <ThemeProvider>

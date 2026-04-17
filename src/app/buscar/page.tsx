@@ -15,6 +15,7 @@ interface SearchParams {
   ciudad?: string
   provincia?: string
   trade?: string
+  q?: string
 }
 
 interface Props {
@@ -23,13 +24,13 @@ interface Props {
 
 async function Results({ searchParams }: { searchParams: SearchParams }) {
   const supabase = createServiceRoleClient()
-  const { ciudad, provincia, trade } = searchParams
+  const { ciudad, provincia, trade, q } = searchParams
 
-  if (!ciudad && !provincia) {
+  if (!ciudad && !provincia && !q) {
     return (
       <div className="text-center py-12 text-muted-foreground">
         <Search className="w-12 h-12 mx-auto mb-3 opacity-20" />
-        <p className="font-medium">Seleccioná una provincia o ciudad para buscar</p>
+        <p className="font-medium">Seleccioná una provincia, ciudad o buscá por nombre</p>
       </div>
     )
   }
@@ -47,6 +48,12 @@ async function Results({ searchParams }: { searchParams: SearchParams }) {
   if (ciudad) query = query.ilike('ciudad', `%${ciudad}%`)
   if (provincia && provincia !== 'todas') query = query.ilike('provincia', `%${provincia}%`)
   if (filteringByTrade) query = query.eq('installer_trades.trade.slug', trade)
+  if (q && q.trim()) {
+    const kw = q.trim()
+    query = query.or(
+      `nombre.ilike.%${kw}%,apellido.ilike.%${kw}%,nombre_comercial.ilike.%${kw}%,titulo_profesional.ilike.%${kw}%,descripcion.ilike.%${kw}%`
+    )
+  }
 
   const { data: installers } = await query
   const location = [ciudad, provincia && provincia !== 'todas' ? provincia : ''].filter(Boolean).join(', ')

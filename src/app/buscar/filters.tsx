@@ -17,7 +17,7 @@ const PROVINCIAS = [
 
 interface Props {
   trades: Trade[]
-  initialParams: { ciudad?: string; trade?: string; provincia?: string }
+  initialParams: { ciudad?: string; trade?: string; provincia?: string; q?: string }
 }
 
 export function MarketplaceFilters({ trades, initialParams }: Props) {
@@ -26,6 +26,7 @@ export function MarketplaceFilters({ trades, initialParams }: Props) {
   const [provincia, setProvincia] = useState(initialParams.provincia ?? '')
   const [ciudad, setCiudad] = useState(initialParams.ciudad ?? '')
   const [trade, setTrade] = useState(initialParams.trade ?? '')
+  const [q, setQ] = useState(initialParams.q ?? '')
 
   const [suggestions, setSuggestions] = useState<string[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
@@ -108,6 +109,7 @@ export function MarketplaceFilters({ trades, initialParams }: Props) {
     if (ciudad) params.set('ciudad', ciudad)
     if (provincia) params.set('provincia', provincia)
     if (trade && trade !== 'todos') params.set('trade', trade)
+    if (q.trim()) params.set('q', q.trim())
     startTransition(() => router.push(`/buscar?${params.toString()}`))
   }
 
@@ -181,6 +183,14 @@ export function MarketplaceFilters({ trades, initialParams }: Props) {
           Buscar
         </Button>
       </div>
+
+      {/* Keyword search */}
+      <Input
+        placeholder="Buscar por nombre, especialidad, descripción…"
+        value={q}
+        onChange={e => setQ(e.target.value)}
+        className="w-full"
+      />
     </form>
   )
 }

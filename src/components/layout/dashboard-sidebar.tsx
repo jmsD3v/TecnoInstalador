@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation"
 import {
   LayoutDashboard, User, Wrench, Image, Star, MessageSquare,
   FileText, CreditCard, BarChart2, ChevronRight, Crown, Zap, Home, ShieldCheck,
-  Menu, X,
+  Menu, X, Bell, Gift,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PlanType } from "@/types"
@@ -18,6 +18,7 @@ interface SidebarProps {
   urlSlug?: string
   isAdmin?: boolean
   profileProgress?: React.ReactNode
+  unreadNotifications?: number
 }
 
 interface NavItem {
@@ -49,9 +50,12 @@ const NAV_ITEMS: NavItem[] = [
     planRequired: ['PREMIUM'],
   },
   { href: '/dashboard/plan', label: 'Mi plan', icon: CreditCard },
+  { href: '/dashboard/verify', label: 'Verificación', icon: ShieldCheck },
+  { href: '/dashboard/notifications', label: 'Notificaciones', icon: Bell },
+  { href: '/dashboard/referral', label: 'Referidos', icon: Gift },
 ]
 
-export function DashboardSidebar({ plan, trialEndsAt, urlSlug, isAdmin, profileProgress }: SidebarProps) {
+export function DashboardSidebar({ plan, trialEndsAt, urlSlug, isAdmin, profileProgress, unreadNotifications = 0 }: SidebarProps) {
   const pathname = usePathname()
   const isTrialActive = trialEndsAt && new Date(trialEndsAt) > new Date()
 
@@ -105,6 +109,11 @@ export function DashboardSidebar({ plan, trialEndsAt, urlSlug, isAdmin, profileP
               {isLocked && (
                 <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded-full font-semibold">
                   {item.planRequired?.includes('PREMIUM') ? 'Premium' : 'Pro'}
+                </span>
+              )}
+              {!isLocked && item.href === '/dashboard/notifications' && unreadNotifications > 0 && (
+                <span className="text-xs bg-red-500 text-white px-1.5 py-0.5 rounded-full font-bold min-w-[18px] text-center">
+                  {unreadNotifications > 99 ? '99+' : unreadNotifications}
                 </span>
               )}
             </Link>

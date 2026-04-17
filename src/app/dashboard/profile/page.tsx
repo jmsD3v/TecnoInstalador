@@ -44,6 +44,7 @@ export default function ProfilePage() {
     telefono: '',
     whatsapp: '',
     color_palette: 'azul' as ColorPalette,
+    availability_status: 'available' as 'available' | 'busy' | 'on_demand',
   })
 
   useEffect(() => {
@@ -72,6 +73,7 @@ export default function ProfilePage() {
           telefono: data.telefono ?? '',
           whatsapp: data.whatsapp ?? '',
           color_palette: data.color_palette ?? 'azul',
+          availability_status: data.availability_status ?? 'available',
         })
         setPhotoUrl(data.foto_perfil_url ?? null)
         setBannerUrl(data.banner_url ?? null)
@@ -479,6 +481,41 @@ export default function ProfilePage() {
                 required
               />
             </FormField>
+          </CardContent>
+        </Card>
+
+        {/* ── DISPONIBILIDAD ────────────────────────── */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Disponibilidad</CardTitle>
+            <CardDescription>Mostrá tu estado actual en tu perfil público</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-col gap-2">
+              {([
+                { value: 'available', label: '✅ Disponible', desc: 'Aceptando nuevos trabajos' },
+                { value: 'busy', label: '🔴 Ocupado', desc: 'No disponible por el momento' },
+                { value: 'on_demand', label: '🟡 Bajo demanda', desc: 'Solo trabajos puntuales' },
+              ] as const).map(opt => (
+                <button
+                  key={opt.value}
+                  type="button"
+                  onClick={() => setForm(f => ({ ...f, availability_status: opt.value }))}
+                  className={cn(
+                    'flex items-start gap-3 p-3 rounded-xl border-2 transition-all text-left',
+                    form.availability_status === opt.value
+                      ? 'border-primary bg-primary/5'
+                      : 'border-border hover:border-muted-foreground/30'
+                  )}
+                >
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold">{opt.label}</p>
+                    <p className="text-xs text-muted-foreground">{opt.desc}</p>
+                  </div>
+                  {form.availability_status === opt.value && <Check className="w-4 h-4 text-primary shrink-0 mt-0.5" />}
+                </button>
+              ))}
+            </div>
           </CardContent>
         </Card>
 

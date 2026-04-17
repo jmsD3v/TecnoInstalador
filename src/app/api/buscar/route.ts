@@ -9,6 +9,7 @@ const querySchema = z.object({
   ciudad: z.string().optional(),
   provincia: z.string().optional(),
   trade: z.string().optional(),
+  q: z.string().optional(),
   offset: z.coerce.number().int().min(0).default(0),
 })
 
@@ -16,7 +17,7 @@ export async function GET(req: NextRequest) {
   const parsed = querySchema.safeParse(Object.fromEntries(req.nextUrl.searchParams))
   if (!parsed.success) return NextResponse.json({ error: 'Invalid params' }, { status: 400 })
 
-  const { ciudad, provincia, trade, offset } = parsed.data
+  const { ciudad, provincia, trade, q, offset } = parsed.data
   const filteringByTrade = trade && trade !== 'todos'
 
   const supabase = createServiceRoleClient()
@@ -32,6 +33,12 @@ export async function GET(req: NextRequest) {
   if (ciudad) query = query.ilike('ciudad', `%${ciudad}%`)
   if (provincia && provincia !== 'todas') query = query.ilike('provincia', `%${provincia}%`)
   if (filteringByTrade) query = query.eq('installer_trades.trade.slug', trade)
+  if (q && q.trim()) {
+    const kw = q.trim()
+    query = query.or(
+      `nombre.ilike.%${kw}%,apellido.ilike.%${kw}%,nombre_comercial.ilike.%${kw}%,titulo_profesional.ilike.%${kw}%,descripcion.ilike.%${kw}%`
+    )
+  }
 
   const { data } = await query
 

@@ -67,5 +67,17 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // In-app notification (fire-and-forget)
+  const ratingStars = '⭐'.repeat(rating)
+  supabase.from('notifications').insert({
+    installer_id: invite.installer_id,
+    type: 'review',
+    title: `Nueva reseña ${ratingStars}`,
+    body: clientName
+      ? `${clientName} te dejó ${rating} estrella${rating === 1 ? '' : 's'}${comentario ? `: "${comentario.slice(0, 80)}"` : '.'}`
+      : `Recibiste una reseña de ${rating} estrella${rating === 1 ? '' : 's'}.`,
+    link: '/dashboard/reviews',
+  }).then(() => {})
+
   return NextResponse.json({ ok: true })
 }

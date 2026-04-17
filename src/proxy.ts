@@ -11,7 +11,7 @@ function buildCSP(nonce: string): string {
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ''}`,
     "style-src 'self' 'unsafe-inline'",
     "font-src 'self'",
-    "connect-src 'self' https://*.supabase.co https://api.mercadopago.com wss://*.supabase.co",
+    "connect-src 'self' https://*.supabase.co https://api.mercadopago.com wss://*.supabase.co https://*.sentry.io https://plausible.io",
     "frame-ancestors 'none'",
   ].join('; ')
 }

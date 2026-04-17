@@ -7,7 +7,7 @@ import { createServiceRoleClient } from "@/lib/supabase/service"
 import { PlanBadge } from "@/components/ui/plan-badge"
 import { StarRating, InstallerAvatar } from "@/components/ui/avatar"
 import { CollapsibleReviews } from "@/components/installer/collapsible-reviews"
-import { WhatsAppCTA } from "@/components/installer/whatsapp-cta"
+import { QuoteModal } from "@/components/installer/quote-modal"
 import { COLOR_PALETTES } from "@/types"
 import { getTradeIcon } from "@/lib/trade-icons"
 import { Navbar } from "@/components/layout/navbar"
@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const url = `${APP_URL}/i/${slug}`
   const title = `${name} – ${data.ciudad} | TecnoInstalador`
   const description = data.descripcion
-    ?? `Contratá a ${name} en ${data.ciudad}. Profesional verificado con reseñas reales. Contacto directo por WhatsApp.`
+    ?? `Contratá a ${name} en ${data.ciudad}. Profesional con reseñas reales. Contacto directo por WhatsApp.`
   return {
     title,
     description,
@@ -218,6 +218,27 @@ export default async function InstallerProfilePage({ params }: Props) {
                 <MapPin className="w-3.5 h-3.5" />
                 {installer.ciudad}, {installer.provincia}
               </span>
+              {installer.is_verified && (
+                <span className="flex items-center gap-1 text-xs font-semibold text-sky-600 dark:text-sky-400 bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-800 px-2 py-0.5 rounded-full">
+                  <CheckCircle2 className="w-3 h-3 fill-sky-500/20" />
+                  Verificado
+                </span>
+              )}
+              {installer.availability_status === 'available' && (
+                <span className="text-xs font-semibold text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-800 px-2 py-0.5 rounded-full">
+                  ✅ Disponible
+                </span>
+              )}
+              {installer.availability_status === 'busy' && (
+                <span className="text-xs font-semibold text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 px-2 py-0.5 rounded-full">
+                  🔴 Ocupado
+                </span>
+              )}
+              {installer.availability_status === 'on_demand' && (
+                <span className="text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 px-2 py-0.5 rounded-full">
+                  🟡 Bajo demanda
+                </span>
+              )}
             </div>
 
             {/* Rating */}
@@ -246,13 +267,19 @@ export default async function InstallerProfilePage({ params }: Props) {
               </h2>
               <div className="grid grid-cols-3 gap-2">
                 {gallery.slice(0, 6).map((item: any) => (
-                  <div key={item.id} className="aspect-square rounded-xl overflow-hidden bg-muted">
+                  <div key={item.id} className="aspect-square rounded-xl overflow-hidden bg-muted relative group">
                     <img
                       src={item.image_url}
                       alt={item.titulo ?? 'Trabajo'}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
                     />
+                    {(item.titulo || item.descripcion) && (
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2">
+                        {item.titulo && <p className="text-white text-xs font-semibold leading-tight line-clamp-1">{item.titulo}</p>}
+                        {item.descripcion && <p className="text-white/80 text-[10px] leading-tight line-clamp-2 mt-0.5">{item.descripcion}</p>}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -305,7 +332,7 @@ export default async function InstallerProfilePage({ params }: Props) {
 
           {/* ── CTA INLINE ───────────────────────────── */}
           <div className="px-5 pb-5 pt-2 border-t border-border">
-            <WhatsAppCTA
+            <QuoteModal
               whatsapp={installer.whatsapp}
               installerName={displayName}
               installerId={installer.id}

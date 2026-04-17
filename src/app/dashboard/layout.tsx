@@ -19,9 +19,18 @@ export default async function DashboardLayout({
 
   const { data: installer } = await supabase
     .from('installers')
-    .select('plan, trial_ends_at, url_slug, onboarding_completed, foto_perfil_url, descripcion, ciudad, whatsapp, installer_trades(id), installer_services(id)')
+    .select('id, plan, trial_ends_at, url_slug, onboarding_completed, foto_perfil_url, descripcion, ciudad, whatsapp, installer_trades(id), installer_services(id)')
     .eq('user_id', user.id)
     .single()
+
+  const unread = installer
+    ? (await supabase
+        .from('notifications')
+        .select('id', { count: 'exact', head: true })
+        .eq('installer_id', installer.id)
+        .eq('is_read', false)
+      ).count ?? 0
+    : 0
 
   // If no installer profile yet, show onboarding (they just registered)
   if (!installer) redirect('/auth/register')
@@ -42,6 +51,7 @@ export default async function DashboardLayout({
         trialEndsAt={installer.trial_ends_at}
         urlSlug={installer.url_slug}
         isAdmin={isAdmin}
+        unreadNotifications={unread}
         profileProgress={<ProfileProgress installer={installer as any} />}
       />
       <main className="flex-1 flex flex-col">
