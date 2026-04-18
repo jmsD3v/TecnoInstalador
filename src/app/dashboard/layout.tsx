@@ -3,6 +3,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { DashboardSidebar, MobileBottomNav } from "@/components/layout/dashboard-sidebar"
 import { InstallerProvider } from "@/contexts/installer-context"
 import { ProfileProgress } from "@/components/dashboard/profile-progress"
+import TrialBanner from "@/components/dashboard/trial-banner"
 
 export default async function DashboardLayout({
   children,
@@ -55,6 +56,7 @@ export default async function DashboardLayout({
         profileProgress={<ProfileProgress installer={installer as any} />}
       />
       <main className="flex-1 flex flex-col">
+        <TrialBanner plan={installer.plan} trialEndsAt={installer.trial_ends_at} />
         <div className="flex-1 p-4 md:p-6 pb-24 lg:pb-6">
           <InstallerProvider>{children}</InstallerProvider>
         </div>
