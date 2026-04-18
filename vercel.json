@@ -1,12 +1,8 @@
 {
   "crons": [
     {
-      "path": "/api/cron/sync-subscriptions",
+      "path": "/api/cron/daily",
       "schedule": "0 6 * * *"
-    },
-    {
-      "path": "/api/cron/auto-review-invites",
-      "schedule": "0 10 * * *"
     }
   ]
 }

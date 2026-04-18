@@ -52,7 +52,8 @@ export async function GET(req: NextRequest) {
           .update({ plan: sub.plan })
           .eq('id', sub.installer_id)
 
-        // Referral reward: first payment → extend referrer +30 days PRO
+        // Referral tracking: mark this installer's referral as paid (if not yet marked)
+        // Reward referrer every 5 paid referrals with 30 days PRO
         const { data: inst } = await supabase
           .from('installers')
           .select('referred_by, referral_rewarded_at')
@@ -60,43 +61,56 @@ export async function GET(req: NextRequest) {
           .single()
 
         if (inst?.referred_by && !inst.referral_rewarded_at) {
-          const { data: referrer } = await supabase
-            .from('installers')
-            .select('id, plan, trial_ends_at, plan_expires_at')
-            .eq('id', inst.referred_by)
-            .single()
-
-          if (referrer) {
-            const base = referrer.trial_ends_at
-              ? new Date(referrer.trial_ends_at)
-              : referrer.plan_expires_at
-                ? new Date(referrer.plan_expires_at)
-                : new Date()
-            if (base < new Date()) base.setTime(new Date().getTime())
-            base.setDate(base.getDate() + 30)
-
-            await supabase
-              .from('installers')
-              .update({
-                plan: referrer.plan === 'FREE' ? 'PRO' : referrer.plan,
-                trial_ends_at: referrer.trial_ends_at ? base.toISOString() : null,
-                plan_expires_at: !referrer.trial_ends_at ? base.toISOString() : referrer.plan_expires_at,
-              })
-              .eq('id', referrer.id)
-
-            await supabase.from('notifications').insert({
-              installer_id: referrer.id,
-              type: 'system',
-              title: '🎁 Recompensa por referido',
-              body: 'Un instalador que referiste activó su plan. ¡Ganaste 30 días PRO!',
-              link: '/dashboard/referral',
-            })
-          }
-
+          // Mark this referral as paid
           await supabase
             .from('installers')
             .update({ referral_rewarded_at: new Date().toISOString() })
             .eq('id', sub.installer_id)
+
+          // Count total paid referrals for referrer (including this one just marked)
+          const { count: paidReferrals } = await supabase
+            .from('installers')
+            .select('id', { count: 'exact', head: true })
+            .eq('referred_by', inst.referred_by)
+            .not('referral_rewarded_at', 'is', null)
+
+          const REFERRALS_NEEDED = 5
+
+          // Reward every multiple of 5 paid referrals
+          if (paidReferrals && paidReferrals % REFERRALS_NEEDED === 0) {
+            const { data: referrer } = await supabase
+              .from('installers')
+              .select('id, plan, trial_ends_at, plan_expires_at')
+              .eq('id', inst.referred_by)
+              .single()
+
+            if (referrer) {
+              const base = referrer.trial_ends_at
+                ? new Date(referrer.trial_ends_at)
+                : referrer.plan_expires_at
+                  ? new Date(referrer.plan_expires_at)
+                  : new Date()
+              if (base < new Date()) base.setTime(new Date().getTime())
+              base.setDate(base.getDate() + 30)
+
+              await supabase
+                .from('installers')
+                .update({
+                  plan: referrer.plan === 'FREE' ? 'PRO' : referrer.plan,
+                  trial_ends_at: referrer.trial_ends_at ? base.toISOString() : null,
+                  plan_expires_at: !referrer.trial_ends_at ? base.toISOString() : referrer.plan_expires_at,
+                })
+                .eq('id', referrer.id)
+
+              await supabase.from('notifications').insert({
+                installer_id: referrer.id,
+                type: 'system',
+                title: '🎁 ¡Recompensa por referidos!',
+                body: `Llegaste a ${paidReferrals} referidos activos. ¡Ganaste 30 días PRO!`,
+                link: '/dashboard/referral',
+              })
+            }
+          }
         }
 
       } else if (mpStatus === 'cancelled' || mpStatus === 'paused') {

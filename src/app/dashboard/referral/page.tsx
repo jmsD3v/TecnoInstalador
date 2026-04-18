@@ -63,7 +63,7 @@ export default function ReferralPage() {
           Programa de referidos
         </h1>
         <p className="text-muted-foreground text-sm mt-1">
-          Compartí tu link único. Por cada instalador que se registre con tu código y active un plan pago, obtenés <strong>30 días de plan PRO gratis</strong>.
+          Compartí tu link único. Por cada <strong>5 instaladores</strong> que se registren con tu código y activen un plan pago, obtenés <strong>30 días de plan PRO gratis</strong>.
         </p>
       </div>
 
@@ -115,8 +115,8 @@ export default function ReferralPage() {
           {[
             'Compartí tu link único con otros profesionales',
             'Se registran usando tu link',
-            'Cuando activan un plan pago, vos ganás 30 días de PRO',
-            '¡Sin límite — cuantos más referidos, más días gratis!',
+            'Con 5 referidos activos en planes pagos, ganás 30 días de PRO',
+            '¡Se acumula — cada 5 referidos nuevos obtenés otros 30 días!',
           ].map((step, i) => (
             <li key={i} className="flex items-start gap-2.5">
               <span className="shrink-0 w-5 h-5 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center">{i + 1}</span>
