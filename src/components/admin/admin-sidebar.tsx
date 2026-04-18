@@ -188,6 +188,14 @@ export function AdminSidebar({ adminEmail }: { adminEmail: string }) {
             </Link>
           )
         })}
+        {/* Más — opens drawer for dashboard/inicio/salir links */}
+        <button
+          onClick={() => setOpen(true)}
+          className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 text-[10px] font-medium text-slate-400 hover:text-slate-100 transition-colors"
+        >
+          <Menu className="w-5 h-5" />
+          Más
+        </button>
       </nav>
 
     </>
