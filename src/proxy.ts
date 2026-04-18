@@ -1,7 +1,38 @@
 import { createServerClient } from '@supabase/ssr'
+import { createClient } from '@supabase/supabase-js'
 import { NextResponse, type NextRequest } from 'next/server'
 
 const isDev = process.env.NODE_ENV === 'development'
+
+// In-memory cache for custom domain → installer slug lookups
+// Edge workers persist between requests on the same instance; 5-min TTL avoids stale data
+const domainSlugCache = new Map<string, { slug: string | null; ts: number }>()
+const DOMAIN_CACHE_TTL = 5 * 60 * 1000
+
+async function resolveCustomDomain(host: string): Promise<string | null> {
+  const cached = domainSlugCache.get(host)
+  if (cached && Date.now() - cached.ts < DOMAIN_CACHE_TTL) return cached.slug
+
+  try {
+    const sb = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    )
+    const { data } = await sb
+      .from('custom_domains')
+      .select('installer_id, verified, installers(slug)')
+      .eq('domain', host)
+      .eq('verified', true)
+      .single()
+
+    const inst = data?.installers as unknown as { slug: string } | null
+    const slug = inst?.slug ?? null
+    domainSlugCache.set(host, { slug, ts: Date.now() })
+    return slug
+  } catch {
+    return null
+  }
+}
 
 function buildCSP(nonce: string): string {
   return [
@@ -22,6 +53,20 @@ function isAdminEmail(email: string): boolean {
 }
 
 export async function proxy(request: NextRequest) {
+  // Custom domain routing: if host is not the main app domain, rewrite to installer profile
+  const appHost = new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000').hostname
+  const reqHost = request.headers.get('host')?.split(':')[0] ?? ''
+  if (reqHost && reqHost !== appHost && reqHost !== 'localhost' && !reqHost.endsWith('.vercel.app')) {
+    const slug = await resolveCustomDomain(reqHost)
+    if (slug) {
+      const url = request.nextUrl.clone()
+      url.pathname = `/i/${slug}`
+      return NextResponse.rewrite(url)
+    }
+    // Unknown custom domain → redirect to main site
+    return NextResponse.redirect(new URL('/', process.env.NEXT_PUBLIC_APP_URL ?? '/'))
+  }
+
   // Generate a per-request nonce for Content-Security-Policy
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64')
 

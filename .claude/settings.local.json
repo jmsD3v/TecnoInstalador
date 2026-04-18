@@ -54,7 +54,8 @@
       "Bash(taskkill /F /IM node.exe /FI \"PID eq 36316\")",
       "Bash(taskkill /F /IM node.exe /FI \"PID eq 38680\")",
       "Bash(node -e \"console.log\\(require\\('./node_modules/@sentry/nextjs/package.json'\\).version\\)\")",
-      "Bash(pnpm tsc:*)"
+      "Bash(pnpm tsc:*)",
+      "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(d.get\\('next','?'\\)\\)\")"
     ]
   },
   "enableAllProjectMcpServers": true,

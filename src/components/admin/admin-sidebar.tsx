@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { LayoutDashboard, Users, Star, CreditCard, LogOut, Wrench, Home, ChevronLeft, BadgeCheck } from 'lucide-react'
+import { LayoutDashboard, Users, Star, CreditCard, LogOut, Wrench, Home, ChevronLeft, BadgeCheck, Globe } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 
@@ -12,6 +12,7 @@ const NAV = [
   { href: '/admin/reviews', label: 'Reseñas', icon: Star },
   { href: '/admin/subscriptions', label: 'Suscripciones', icon: CreditCard },
   { href: '/admin/verifications', label: 'Verificaciones', icon: BadgeCheck },
+  { href: '/admin/domains', label: 'Dominios', icon: Globe },
 ]
 
 export function AdminSidebar({ adminEmail }: { adminEmail: string }) {
