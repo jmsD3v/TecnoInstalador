@@ -10,7 +10,7 @@ import { Review } from "@/types"
 import { ReviewCard } from "@/components/reviews/review-card"
 import { ReviewCardSkeleton } from "@/components/skeletons/review-card-skeleton"
 import { StarRating } from "@/components/ui/avatar"
-import { MessageSquarePlus, Star } from "lucide-react"
+import { MessageSquarePlus, Star, Download } from "lucide-react"
 import Link from "next/link"
 
 const supabase = createClient()
@@ -106,12 +106,20 @@ export default function ReviewsPage() {
           <h1 className="text-2xl font-bold">Reseñas</h1>
           <p className="text-muted-foreground text-sm mt-1">{reviews.length} reseña(s) recibidas</p>
         </div>
-        <Button variant="outline" asChild>
-          <Link href="/dashboard/reviews/invites">
-            <MessageSquarePlus className="w-4 h-4 mr-2" />
-            Pedir reseña
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <a
+            href="/api/dashboard/export/reviews"
+            className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium hover:bg-muted/60 transition-colors"
+          >
+            <Download className="size-4" /> Exportar CSV
+          </a>
+          <Button variant="outline" asChild>
+            <Link href="/dashboard/reviews/invites">
+              <MessageSquarePlus className="w-4 h-4 mr-2" />
+              Pedir reseña
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* Summary */}

@@ -6,7 +6,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Legend,
 } from 'recharts'
-import { Eye, MessageCircle, TrendingUp, TrendingDown, Minus, Calendar, Star } from 'lucide-react'
+import { Eye, MessageCircle, TrendingUp, TrendingDown, Minus, Calendar, Star, Download } from 'lucide-react'
 import { DashboardStatsSkeleton } from '@/components/skeletons/dashboard-stats-skeleton'
 
 const supabase = createClient()
@@ -113,6 +113,13 @@ export default function StatsPage() {
       {/* Header + period selector */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <h1 className="text-2xl font-bold">Estadísticas</h1>
+        <div className="flex items-center gap-2">
+          <a
+            href="/api/dashboard/export/stats"
+            className="inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium hover:bg-muted/60 transition-colors"
+          >
+            <Download className="size-4" /> Exportar CSV
+          </a>
         <div className="flex items-center gap-1 bg-muted rounded-lg p-1">
           {([7, 30, 90] as Period[]).map(p => (
             <button
@@ -127,6 +134,7 @@ export default function StatsPage() {
               {PERIOD_LABELS[p]}
             </button>
           ))}
+        </div>
         </div>
       </div>
 
