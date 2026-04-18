@@ -48,6 +48,7 @@ export interface Installer {
   dominio_personalizado?: string
   dominio_personalizado_activo: boolean
   total_reviews: number
+  reviews_count: number
   avg_rating: number
   created_at: string
   updated_at: string

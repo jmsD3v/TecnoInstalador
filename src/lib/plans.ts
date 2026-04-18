@@ -122,8 +122,15 @@ export function sortInstallersByPlan(installers: Installer[]): Installer[] {
     const planA = PLAN_WEIGHT[a.plan] ?? 0
     const planB = PLAN_WEIGHT[b.plan] ?? 0
     if (planB !== planA) return planB - planA
+    // Within same plan: verified first, then most reviews, then highest rating
+    const verifiedA = (a as any).is_verified ? 1 : 0
+    const verifiedB = (b as any).is_verified ? 1 : 0
+    if (verifiedB !== verifiedA) return verifiedB - verifiedA
+    const rcA = (a as any).reviews_count ?? a.total_reviews
+    const rcB = (b as any).reviews_count ?? b.total_reviews
+    if (rcB !== rcA) return rcB - rcA
     if (b.avg_rating !== a.avg_rating) return b.avg_rating - a.avg_rating
-    return b.total_reviews - a.total_reviews
+    return 0
   })
 }
 
