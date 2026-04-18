@@ -41,7 +41,7 @@ export default function AdminBICharts({
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
             <XAxis dataKey="label" tick={{ fontSize: 11 }} />
             <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-            <Tooltip formatter={(v: number) => [v, 'Registros']} />
+            <Tooltip formatter={(v) => [v, 'Registros']} />
             <Bar dataKey="value" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
@@ -57,7 +57,7 @@ export default function AdminBICharts({
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
               <XAxis dataKey="label" tick={{ fontSize: 11 }} />
               <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-              <Tooltip formatter={(v: number) => [v, 'Suscripciones']} />
+              <Tooltip formatter={(v) => [v, 'Suscripciones']} />
               <Line type="monotone" dataKey="value" stroke="#10b981" strokeWidth={2} dot={false} />
             </LineChart>
           </ResponsiveContainer>
