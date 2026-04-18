@@ -42,5 +42,23 @@ export async function POST(req: NextRequest) {
     profileUrl: `${APP_URL}/i/${installer.url_slug}`,
   }).catch(err => console.error('[quote-request] email error:', err))
 
+  // Persist lead + notify installer (best-effort)
+  supabase.from('quote_requests').insert({
+    installer_id,
+    client_name: client_name ?? null,
+    job_description: job_description ?? null,
+    service: service ?? null,
+  }).then(() => {})
+
+  supabase.from('notifications').insert({
+    installer_id,
+    type: 'system',
+    title: '📋 Nueva consulta recibida',
+    body: client_name
+      ? `${client_name} te envió una consulta por WhatsApp.`
+      : 'Recibiste una nueva consulta por WhatsApp.',
+    link: '/dashboard/leads',
+  }).then(() => {})
+
   return NextResponse.json({ ok: true })
 }
