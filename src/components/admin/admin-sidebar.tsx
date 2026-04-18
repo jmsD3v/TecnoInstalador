@@ -10,6 +10,14 @@ import {
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
 
+const BOTTOM_NAV = [
+  { href: '/admin', label: 'Overview', icon: LayoutDashboard, exact: true },
+  { href: '/admin/users', label: 'Usuarios', icon: Users },
+  { href: '/admin/verifications', label: 'Verificar', icon: BadgeCheck },
+  { href: '/admin/subscriptions', label: 'Suscripc.', icon: CreditCard },
+  { href: '/admin/reviews', label: 'Reseñas', icon: Star },
+]
+
 const NAV = [
   { href: '/admin', label: 'Overview', icon: LayoutDashboard, exact: true },
   { href: '/admin/users', label: 'Usuarios', icon: Users },
@@ -160,6 +168,28 @@ export function AdminSidebar({ adminEmail }: { adminEmail: string }) {
           </div>
         </div>
       )}
+
+      {/* Mobile bottom nav */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-900 border-t border-slate-700 flex">
+        {BOTTOM_NAV.map(item => {
+          const Icon = item.icon
+          const isActive = item.exact ? pathname === item.href : pathname.startsWith(item.href)
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                'flex-1 flex flex-col items-center justify-center py-2 gap-0.5 text-[10px] font-medium transition-colors',
+                isActive ? 'text-orange-400' : 'text-slate-400 hover:text-slate-100'
+              )}
+            >
+              <Icon className="w-5 h-5" />
+              {item.label}
+            </Link>
+          )
+        })}
+      </nav>
+
     </>
   )
 }
