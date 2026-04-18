@@ -1,9 +1,14 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { format } from 'date-fns'
-import { es } from 'date-fns/locale'
 import { Inbox, ChevronDown } from 'lucide-react'
+
+function fmtDate(iso: string): string {
+  return new Date(iso).toLocaleString('es-AR', {
+    day: 'numeric', month: 'short', year: 'numeric',
+    hour: '2-digit', minute: '2-digit',
+  })
+}
 
 type Lead = {
   id: string
@@ -111,7 +116,7 @@ export default function LeadsPage() {
                   <div>
                     <p className="text-sm font-medium">{lead.client_name ?? 'Cliente desconocido'}</p>
                     <p className="text-xs text-muted-foreground">
-                      {format(new Date(lead.created_at), "d MMM yyyy, HH:mm", { locale: es })}
+                      {fmtDate(lead.created_at)}
                       {lead.service && ` · ${lead.service}`}
                     </p>
                   </div>
