@@ -37,6 +37,15 @@ export async function GET(req: NextRequest) {
     console.error('[cron/daily] auto-review-invites error:', err)
   }
 
+  // 3. Email sequences (onboarding nudge D+3, upgrade nudge D+14)
+  try {
+    const res = await fetch(`${base}/api/cron/email-sequences`, { headers })
+    results.emailSequences = await res.json()
+  } catch (err) {
+    results.emailSequences = { error: String(err) }
+    console.error('[cron/daily] email-sequences error:', err)
+  }
+
   console.log('[cron/daily] completed:', JSON.stringify(results))
   return NextResponse.json(results)
 }
