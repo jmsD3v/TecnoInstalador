@@ -56,7 +56,8 @@ export async function proxy(request: NextRequest) {
   // Custom domain routing: if host is not the main app domain, rewrite to installer profile
   const appHost = new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'http://localhost:3000').hostname
   const reqHost = request.headers.get('host')?.split(':')[0] ?? ''
-  if (reqHost && reqHost !== appHost && reqHost !== 'localhost' && !reqHost.endsWith('.vercel.app')) {
+  const isMainDomain = !reqHost || reqHost === appHost || reqHost === `www.${appHost}` || reqHost === 'localhost' || reqHost.endsWith('.vercel.app')
+  if (!isMainDomain) {
     const slug = await resolveCustomDomain(reqHost)
     if (slug) {
       const url = request.nextUrl.clone()
