@@ -91,7 +91,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!trade || !ciudadNombre) return { title: 'Profesionales | TecnoInstalador' }
 
-  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.com'
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.net'
   const url = `${APP_URL}/buscar/${tradeSlug}/${ciudadSlug}`
   const title = `${trade.nombre} en ${ciudadNombre} | TecnoInstalador`
   const description = `Encontrá ${trade.nombre.toLowerCase()} en ${ciudadNombre}. Perfiles verificados con reseñas reales. Contacto directo por WhatsApp, sin intermediarios.`
@@ -121,7 +121,7 @@ export default async function SEOLandingPage({ params }: Props) {
   const { data: { user } } = await authSupabase.auth.getUser()
   const sorted = sortInstallersByPlan(installers as any)
 
-  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.com'
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.net'
 
   // JSON-LD: ItemList of professionals
   const jsonLd = {

@@ -84,7 +84,7 @@ export default async function TerminosPage() {
 
           <h2>10. Contacto</h2>
           <p>
-            Para consultas relacionadas con estos términos: <a href="mailto:hola@tecnoinstalador.com">hola@tecnoinstalador.com</a>
+            Para consultas relacionadas con estos términos: <a href="mailto:hola@tecnoinstalador.net">hola@tecnoinstalador.net</a>
           </p>
         </div>
       </div>

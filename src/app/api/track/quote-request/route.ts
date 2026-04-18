@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
   if (!email) return NextResponse.json({ ok: true })
 
   const installerName = installer.nombre_comercial ?? `${installer.nombre} ${installer.apellido}`
-  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.com'
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.net'
 
   sendQuoteRequestEmail({
     installerName,

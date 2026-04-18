@@ -79,7 +79,7 @@ export async function POST(
   }).then(() => {})
 
   // Send email notification
-  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.com'
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.net'
   try {
     await sendVerificationStatusEmail({
       installerName,

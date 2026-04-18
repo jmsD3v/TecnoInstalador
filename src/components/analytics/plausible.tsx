@@ -1,6 +1,6 @@
 /**
  * Plausible Analytics — privacy-first, no cookies, GDPR compliant.
- * Set NEXT_PUBLIC_PLAUSIBLE_DOMAIN env var to activate (e.g. "tecnoinstalador.com").
+ * Set NEXT_PUBLIC_PLAUSIBLE_DOMAIN env var to activate (e.g. "tecnoinstalador.net").
  * nonce required for CSP compliance (nonce-based script-src).
  */
 export function PlausibleAnalytics({ nonce }: { nonce?: string }) {

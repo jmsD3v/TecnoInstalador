@@ -80,7 +80,7 @@ export default async function PrivacidadPage() {
             <li><strong>Oposición:</strong> oponerte al tratamiento de tus datos en determinados supuestos.</li>
           </ul>
           <p>
-            Para ejercer estos derechos escribí a: <a href="mailto:privacidad@tecnoinstalador.com">privacidad@tecnoinstalador.com</a>. Responderemos en un plazo máximo de 30 días hábiles.
+            Para ejercer estos derechos escribí a: <a href="mailto:privacidad@tecnoinstalador.net">privacidad@tecnoinstalador.net</a>. Responderemos en un plazo máximo de 30 días hábiles.
           </p>
           <p>
             También podés presentar una reclamación ante la Agencia de Acceso a la Información Pública (AAIP), autoridad de control en Argentina.
@@ -98,7 +98,7 @@ export default async function PrivacidadPage() {
 
           <h2>12. Contacto</h2>
           <p>
-            Para cualquier consulta sobre privacidad: <a href="mailto:privacidad@tecnoinstalador.com">privacidad@tecnoinstalador.com</a>
+            Para cualquier consulta sobre privacidad: <a href="mailto:privacidad@tecnoinstalador.net">privacidad@tecnoinstalador.net</a>
           </p>
         </div>
       </div>

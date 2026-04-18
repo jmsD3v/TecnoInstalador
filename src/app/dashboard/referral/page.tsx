@@ -39,7 +39,7 @@ export default function ReferralPage() {
     load()
   }, [])
 
-  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.com'
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.net'
   const referralUrl = referralCode ? `${APP_URL}/auth/register?ref=${referralCode}` : ''
 
   const handleCopy = async () => {

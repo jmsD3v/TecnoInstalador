@@ -16,7 +16,7 @@ const monaspaceKrypton = localFont({
   display: 'swap',
 })
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.com'
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.net'
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),

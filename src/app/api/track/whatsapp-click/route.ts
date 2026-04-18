@@ -75,7 +75,7 @@ export async function POST(req: NextRequest) {
         const email = authUser?.user?.email
         if (!email) return
         const name = inst.nombre_comercial ?? `${inst.nombre} ${inst.apellido}`
-        const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.com'
+        const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.net'
         sendWhatsAppClickEmail({
           installerName: name,
           installerEmail: email,

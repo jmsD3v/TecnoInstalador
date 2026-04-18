@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!data) return { title: 'Instalador no encontrado' }
   const name = data.nombre_comercial ?? `${data.nombre} ${data.apellido}`
-  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.com'
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.net'
   const url = `${APP_URL}/i/${slug}`
   const title = `${name} – ${data.ciudad} | TecnoInstalador`
   const description = data.descripcion
@@ -81,7 +81,7 @@ export default async function InstallerProfilePage({ params }: Props) {
   const mainTrade = trades[0]?.nombre ?? 'Profesional'
 
 
-  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.com'
+  const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://tecnoinstalador.net'
   const profileUrl = `${APP_URL}/i/${installer.url_slug}`
 
   // JSON-LD: LocalBusiness + BreadcrumbList
