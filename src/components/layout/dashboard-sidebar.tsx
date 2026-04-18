@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation"
 import {
   LayoutDashboard, User, Wrench, Image, Star, MessageSquare,
   FileText, CreditCard, BarChart2, ChevronRight, Crown, Zap, Home, ShieldCheck,
-  Menu, X, Bell, Gift, Globe, Inbox,
+  Menu, X, Bell, Gift, Globe, Inbox, Code2,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PlanType } from "@/types"
@@ -55,6 +55,7 @@ const NAV_ITEMS: NavItem[] = [
   { href: '/dashboard/leads', label: 'Consultas', icon: Inbox },
   { href: '/dashboard/referral', label: 'Referidos', icon: Gift },
   { href: '/dashboard/domain', label: 'Dominio propio', icon: Globe },
+  { href: '/dashboard/widget', label: 'Widget reseñas', icon: Code2 },
 ]
 
 export function DashboardSidebar({ plan, trialEndsAt, urlSlug, isAdmin, profileProgress, unreadNotifications = 0 }: SidebarProps) {
