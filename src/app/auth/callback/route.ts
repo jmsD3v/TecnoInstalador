@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { slugify } from '@/lib/utils'
+import { sendWelcomeEmail } from '@/lib/email'
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
@@ -50,6 +51,23 @@ export async function GET(request: NextRequest) {
       total_reviews: 0,
       avg_rating: 0,
     })
+
+    // Send welcome email (fire-and-forget)
+    const userEmail = data.user.email
+    if (userEmail) {
+      const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? origin
+      sendWelcomeEmail({
+        installerName: nombre,
+        installerEmail: userEmail,
+        dashboardUrl: `${APP_URL}/dashboard`,
+      }).catch(err => console.error('[welcome-email]', err))
+
+      // Mark welcome email as sent
+      supabase.from('installers')
+        .update({ welcome_email_sent_at: new Date().toISOString() })
+        .eq('user_id', data.user.id)
+        .then(() => {})
+    }
 
     // Redirigir al perfil para completar datos
     return NextResponse.redirect(`${origin}/dashboard/profile?onboarding=1`)

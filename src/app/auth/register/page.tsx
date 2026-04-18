@@ -126,6 +126,10 @@ export default function RegisterPage() {
     }
 
     toast({ title: "¡Perfil creado!", description: "Bienvenido a TecnoInstalador", variant: "success" })
+
+    // Fire-and-forget welcome email
+    fetch('/api/auth/send-welcome', { method: 'POST' }).catch(() => {})
+
     router.push('/dashboard')
     router.refresh()
   }
