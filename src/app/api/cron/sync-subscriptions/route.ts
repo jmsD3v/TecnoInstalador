@@ -52,6 +52,53 @@ export async function GET(req: NextRequest) {
           .update({ plan: sub.plan })
           .eq('id', sub.installer_id)
 
+        // Referral reward: first payment → extend referrer +30 days PRO
+        const { data: inst } = await supabase
+          .from('installers')
+          .select('referred_by, referral_rewarded_at')
+          .eq('id', sub.installer_id)
+          .single()
+
+        if (inst?.referred_by && !inst.referral_rewarded_at) {
+          const { data: referrer } = await supabase
+            .from('installers')
+            .select('id, plan, trial_ends_at, plan_expires_at')
+            .eq('id', inst.referred_by)
+            .single()
+
+          if (referrer) {
+            const base = referrer.trial_ends_at
+              ? new Date(referrer.trial_ends_at)
+              : referrer.plan_expires_at
+                ? new Date(referrer.plan_expires_at)
+                : new Date()
+            if (base < new Date()) base.setTime(new Date().getTime())
+            base.setDate(base.getDate() + 30)
+
+            await supabase
+              .from('installers')
+              .update({
+                plan: referrer.plan === 'FREE' ? 'PRO' : referrer.plan,
+                trial_ends_at: referrer.trial_ends_at ? base.toISOString() : null,
+                plan_expires_at: !referrer.trial_ends_at ? base.toISOString() : referrer.plan_expires_at,
+              })
+              .eq('id', referrer.id)
+
+            await supabase.from('notifications').insert({
+              installer_id: referrer.id,
+              type: 'system',
+              title: '🎁 Recompensa por referido',
+              body: 'Un instalador que referiste activó su plan. ¡Ganaste 30 días PRO!',
+              link: '/dashboard/referral',
+            })
+          }
+
+          await supabase
+            .from('installers')
+            .update({ referral_rewarded_at: new Date().toISOString() })
+            .eq('id', sub.installer_id)
+        }
+
       } else if (mpStatus === 'cancelled' || mpStatus === 'paused') {
         await supabase
           .from('subscriptions')
