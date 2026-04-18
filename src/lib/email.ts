@@ -330,3 +330,169 @@ export async function sendQuoteRequestEmail(params: QuoteRequestEmailParams) {
     html,
   })
 }
+
+// ─────────────────────────────────────────────
+// S8-EMAIL-SEQ: Automated email sequences
+// ─────────────────────────────────────────────
+
+export async function sendWelcomeEmail({
+  installerName,
+  installerEmail,
+  dashboardUrl,
+}: {
+  installerName: string
+  installerEmail: string
+  dashboardUrl: string
+}) {
+  const year = new Date().getFullYear()
+  return resend.emails.send({
+    from: process.env.RESEND_FROM!,
+    to: installerEmail,
+    subject: `Bienvenido a TecnoInstalador, ${installerName} 👋`,
+    html: `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f1f5f9;padding:40px 16px;">
+  <tr><td align="center">
+    <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
+      <tr>
+        <td style="background:linear-gradient(135deg,#1d4ed8 0%,#1e40af 100%);border-radius:16px 16px 0 0;padding:32px 40px;text-align:center;">
+          <span style="font-size:22px;font-weight:900;color:#ffffff;">Tecno<span style="color:#93c5fd;">Instalador</span></span>
+          <p style="margin:16px 0 0;font-size:28px;font-weight:800;color:#ffffff;">¡Bienvenido, ${installerName}! 🎉</p>
+        </td>
+      </tr>
+      <tr>
+        <td style="background:#ffffff;padding:32px 40px;">
+          <p style="margin:0 0 16px;font-size:15px;color:#334155;line-height:1.6;">Tu cuenta en <strong>TecnoInstalador</strong> está lista. Ahora podés recibir clientes de toda Argentina.</p>
+          <p style="margin:0 0 8px;font-size:15px;font-weight:700;color:#1e293b;">Próximos pasos para destacarte:</p>
+          <ol style="margin:0 0 24px;padding-left:20px;font-size:14px;color:#334155;line-height:2;">
+            <li>Completá tu perfil con foto, descripción y ciudad</li>
+            <li>Agregá tus oficios y servicios</li>
+            <li>Subí fotos de tus trabajos a la galería</li>
+          </ol>
+          <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
+            <a href="${dashboardUrl}" style="display:inline-block;background:linear-gradient(135deg,#1d4ed8 0%,#1e40af 100%);color:#ffffff;font-size:15px;font-weight:700;padding:14px 32px;border-radius:10px;text-decoration:none;">Ir a mi panel &rarr;</a>
+          </td></tr></table>
+        </td>
+      </tr>
+      <tr>
+        <td style="background:#f8fafc;border-top:1px solid #e2e8f0;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;">
+          <p style="margin:0;font-size:11px;color:#cbd5e1;">&copy; ${year} TecnoInstalador &mdash; Desarrollado desde Las Bre&ntilde;as con &#128156;</p>
+        </td>
+      </tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>`,
+  })
+}
+
+export async function sendOnboardingNudgeEmail({
+  installerName,
+  installerEmail,
+  dashboardUrl,
+  missingItems,
+}: {
+  installerName: string
+  installerEmail: string
+  dashboardUrl: string
+  missingItems: string[]
+}) {
+  const year = new Date().getFullYear()
+  const listHtml = missingItems.map(i => `<li>${i}</li>`).join('')
+  return resend.emails.send({
+    from: process.env.RESEND_FROM!,
+    to: installerEmail,
+    subject: `${installerName}, completá tu perfil y aparecé primero en las búsquedas`,
+    html: `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f1f5f9;padding:40px 16px;">
+  <tr><td align="center">
+    <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
+      <tr>
+        <td style="background:linear-gradient(135deg,#d97706 0%,#b45309 100%);border-radius:16px 16px 0 0;padding:32px 40px;text-align:center;">
+          <span style="font-size:22px;font-weight:900;color:#ffffff;">Tecno<span style="color:#fde68a;">Instalador</span></span>
+          <p style="margin:16px 0 0;font-size:28px;font-weight:800;color:#ffffff;">Tu perfil todavía no está completo 📋</p>
+        </td>
+      </tr>
+      <tr>
+        <td style="background:#ffffff;padding:32px 40px;">
+          <p style="margin:0 0 16px;font-size:15px;color:#334155;line-height:1.6;">Hola <strong>${installerName}</strong>, los instaladores con perfiles completos reciben hasta <strong>3x más consultas</strong>.</p>
+          <p style="margin:0 0 8px;font-size:14px;font-weight:700;color:#1e293b;">Te falta completar:</p>
+          <ul style="margin:0 0 24px;padding-left:20px;font-size:14px;color:#334155;line-height:2;">${listHtml}</ul>
+          <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
+            <a href="${dashboardUrl}" style="display:inline-block;background:linear-gradient(135deg,#1d4ed8 0%,#1e40af 100%);color:#ffffff;font-size:15px;font-weight:700;padding:14px 32px;border-radius:10px;text-decoration:none;">Completar mi perfil &rarr;</a>
+          </td></tr></table>
+        </td>
+      </tr>
+      <tr>
+        <td style="background:#f8fafc;border-top:1px solid #e2e8f0;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;">
+          <p style="margin:0;font-size:11px;color:#cbd5e1;">&copy; ${year} TecnoInstalador &mdash; Desarrollado desde Las Bre&ntilde;as con &#128156;</p>
+        </td>
+      </tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>`,
+  })
+}
+
+export async function sendUpgradeNudgeEmail({
+  installerName,
+  installerEmail,
+  planesUrl,
+}: {
+  installerName: string
+  installerEmail: string
+  planesUrl: string
+}) {
+  const year = new Date().getFullYear()
+  return resend.emails.send({
+    from: process.env.RESEND_FROM!,
+    to: installerEmail,
+    subject: `${installerName}, desbloqueá más clientes con el plan PRO`,
+    html: `<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
+<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f1f5f9;padding:40px 16px;">
+  <tr><td align="center">
+    <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;">
+      <tr>
+        <td style="background:linear-gradient(135deg,#7c3aed 0%,#6d28d9 100%);border-radius:16px 16px 0 0;padding:32px 40px;text-align:center;">
+          <span style="font-size:22px;font-weight:900;color:#ffffff;">Tecno<span style="color:#ddd6fe;">Instalador</span></span>
+          <p style="margin:16px 0 0;font-size:28px;font-weight:800;color:#ffffff;">¿Querés más consultas? 🚀</p>
+        </td>
+      </tr>
+      <tr>
+        <td style="background:#ffffff;padding:32px 40px;">
+          <p style="margin:0 0 16px;font-size:15px;color:#334155;line-height:1.6;">Hola <strong>${installerName}</strong>, con el plan <strong>PRO</strong> vas a aparecer más arriba en las búsquedas y tener acceso a estadísticas detalladas.</p>
+          <p style="margin:0 0 8px;font-size:14px;font-weight:700;color:#1e293b;">Beneficios del plan PRO:</p>
+          <ul style="margin:0 0 24px;padding-left:20px;font-size:14px;color:#334155;line-height:2;">
+            <li>Mayor visibilidad en búsquedas</li>
+            <li>Estadísticas de visitas y contactos</li>
+            <li>Gestión de presupuestos</li>
+            <li>Soporte prioritario</li>
+          </ul>
+          <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
+            <a href="${planesUrl}" style="display:inline-block;background:linear-gradient(135deg,#7c3aed 0%,#6d28d9 100%);color:#ffffff;font-size:15px;font-weight:700;padding:14px 32px;border-radius:10px;text-decoration:none;">Ver planes y precios &rarr;</a>
+          </td></tr></table>
+        </td>
+      </tr>
+      <tr>
+        <td style="background:#f8fafc;border-top:1px solid #e2e8f0;border-radius:0 0 16px 16px;padding:20px 40px;text-align:center;">
+          <p style="margin:0;font-size:11px;color:#cbd5e1;">&copy; ${year} TecnoInstalador &mdash; Desarrollado desde Las Bre&ntilde;as con &#128156;</p>
+        </td>
+      </tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>`,
+  })
+}
