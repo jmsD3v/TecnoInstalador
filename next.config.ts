@@ -46,7 +46,4 @@ export default withSentryConfig(nextConfig, {
   sourcemaps: {
     disable: !process.env.SENTRY_AUTH_TOKEN,
   },
-  // Disable Sentry webpack plugin if DSN not set (local dev)
-  disableLogger: true,
-  automaticVercelMonitors: false,
 })
