@@ -13,7 +13,6 @@ const bodySchema = z.object({
   action: z.enum(['approve', 'reject']),
   adminNote: z.string().max(500).nullable().optional(),
   installerId: z.string().uuid(),
-  installerEmail: z.string().email(),
   installerName: z.string().min(1),
 })
 
@@ -34,8 +33,16 @@ export async function POST(
   const parsed = bodySchema.safeParse(await req.json())
   if (!parsed.success) return NextResponse.json({ error: 'Invalid body' }, { status: 400 })
 
-  const { action, adminNote, installerId, installerEmail, installerName } = parsed.data
+  const { action, adminNote, installerId, installerName } = parsed.data
   const service = createServiceRoleClient()
+
+  // Resolve installer email from auth via user_id
+  const { data: instData } = await service
+    .from('installers').select('user_id').eq('id', installerId).single()
+  const { data: authUser } = instData?.user_id
+    ? await service.auth.admin.getUserById(instData.user_id)
+    : { data: null }
+  const installerEmail = authUser?.user?.email ?? ''
 
   // Update verification request
   const { error: updateErr } = await service

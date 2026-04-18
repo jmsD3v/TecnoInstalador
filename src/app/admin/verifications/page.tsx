@@ -11,7 +11,7 @@ export default async function AdminVerificationsPage() {
     .from('verification_requests')
     .select(`
       id, status, doc_urls, admin_note, created_at, reviewed_at,
-      installers!installer_id(id, nombre, apellido, nombre_comercial, email, ciudad, provincia, is_verified)
+      installers!installer_id(id, nombre, apellido, nombre_comercial, ciudad, provincia, is_verified, user_id)
     `)
     .order('created_at', { ascending: false })
 
@@ -74,7 +74,7 @@ function VerificationCard({ request, readOnly = false }: { request: any; readOnl
             {request.status === 'approved' && <CheckCircle2 className="w-4 h-4 text-green-400" />}
             {request.status === 'rejected' && <XCircle className="w-4 h-4 text-red-400" />}
           </div>
-          <p className="text-sm text-slate-400">{installer?.email} · {installer?.ciudad}, {installer?.provincia}</p>
+          <p className="text-sm text-slate-400">{[installer?.ciudad, installer?.provincia].filter(Boolean).join(', ')}</p>
           <p className="text-xs text-slate-500 mt-1">
             Enviada: {new Date(request.created_at).toLocaleString('es-AR')}
             {request.reviewed_at && ` · Revisada: ${new Date(request.reviewed_at).toLocaleString('es-AR')}`}
@@ -109,7 +109,6 @@ function VerificationCard({ request, readOnly = false }: { request: any; readOnl
         <VerificationActions
           requestId={request.id}
           installerId={installer?.id}
-          installerEmail={installer?.email}
           installerName={displayName}
         />
       )}

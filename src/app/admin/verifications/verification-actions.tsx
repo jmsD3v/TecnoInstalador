@@ -9,11 +9,10 @@ import { CheckCircle2, XCircle } from 'lucide-react'
 interface Props {
   requestId: string
   installerId: string
-  installerEmail: string
   installerName: string
 }
 
-export function VerificationActions({ requestId, installerId, installerEmail, installerName }: Props) {
+export function VerificationActions({ requestId, installerId, installerName }: Props) {
   const [note, setNote] = useState('')
   const [loading, setLoading] = useState<'approve' | 'reject' | null>(null)
   const router = useRouter()
@@ -23,7 +22,7 @@ export function VerificationActions({ requestId, installerId, installerEmail, in
     const res = await fetch(`/api/admin/verifications/${requestId}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action, adminNote: note.trim() || null, installerId, installerEmail, installerName }),
+      body: JSON.stringify({ action, adminNote: note.trim() || null, installerId, installerName }),
     })
     if (res.ok) {
       router.refresh()
