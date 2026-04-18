@@ -100,6 +100,21 @@ export async function proxy(request: NextRequest) {
   // Refresh session (required by Supabase SSR to keep session alive)
   const { data: { user } } = await supabase.auth.getUser()
 
+  // Absolute session max age: 8 hours from last actual sign-in
+  // Supabase refresh tokens renew indefinitely without this check
+  const SESSION_MAX_AGE_MS = 8 * 60 * 60 * 1000
+  const isProtected =
+    request.nextUrl.pathname.startsWith('/dashboard') ||
+    request.nextUrl.pathname.startsWith('/admin')
+
+  if (user && isProtected) {
+    const signedInAt = user.last_sign_in_at ? new Date(user.last_sign_in_at).getTime() : 0
+    if (Date.now() - signedInAt > SESSION_MAX_AGE_MS) {
+      await supabase.auth.signOut()
+      return NextResponse.redirect(new URL('/auth/login', request.url))
+    }
+  }
+
   // Admin routes — fail closed
   if (request.nextUrl.pathname.startsWith('/admin')) {
     if (!user || !isAdminEmail(user.email ?? '')) {
