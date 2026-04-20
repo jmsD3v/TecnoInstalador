@@ -58,7 +58,8 @@
       "Bash(python -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(d.get\\('next','?'\\)\\)\")",
       "Bash(sed -i 's|tecnoinstalador\\\\.com'\\\\''|tecnoinstalador.net'\\\\''|g' 'src/app/api/admin/verifications/[id]/route.ts' src/app/api/track/quote-request/route.ts src/app/api/track/whatsapp-click/route.ts 'src/app/buscar/[trade]/[ciudad]/page.tsx' src/app/dashboard/referral/page.tsx 'src/app/i/[slug]/page.tsx' src/app/layout.tsx src/app/robots.ts src/app/sitemap.ts)",
       "Bash(sed -i 's|tecnoinstalador\\\\.com\"|tecnoinstalador.net\"|g' src/components/analytics/plausible.tsx)",
-      "Bash(sed -i 's|@tecnoinstalador\\\\.com|@tecnoinstalador.net|g' src/app/legal/privacidad/page.tsx src/app/legal/terminos/page.tsx)"
+      "Bash(sed -i 's|@tecnoinstalador\\\\.com|@tecnoinstalador.net|g' src/app/legal/privacidad/page.tsx src/app/legal/terminos/page.tsx)",
+      "mcp__e9d748e0-4312-43c2-95de-238ebc828c84__list_projects"
     ]
   },
   "enableAllProjectMcpServers": true,

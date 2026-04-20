@@ -1,8 +1,6 @@
-<div align="center">
-
 # ⚡ TecnoInstalador
 
-### La plataforma que conecta profesionales del oficio con sus próximos clientes
+## La plataforma que conecta profesionales del oficio con sus próximos clientes
 
 [![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
@@ -25,6 +23,7 @@ Los clientes encuentran al profesional ideal por ciudad y oficio, ven sus reseñ
 ## ✨ Características principales
 
 ### Para profesionales
+
 - 🪪 **Perfil público personalizado** con URL propia (`/i/tu-nombre`)
 - 📸 **Galería de trabajos** con descripciones editables
 - ⭐ **Reseñas verificadas** via links únicos para clientes
@@ -34,11 +33,13 @@ Los clientes encuentran al profesional ideal por ciudad y oficio, ven sus reseñ
 - 🏅 **Planes Free / Pro / Premium** con suscripción via MercadoPago
 
 ### Para clientes
+
 - 🔍 **Buscador** por oficio y ciudad
 - ✅ Perfiles verificados con reseñas reales
 - 📱 Contacto directo sin registro previo
 
 ### Plataforma
+
 - 📱 **Mobile-first** — diseñado y optimizado para celular
 - 🌙 Modo oscuro nativo
 - ⚡ App Router de Next.js 16 con Server Components
@@ -50,18 +51,18 @@ Los clientes encuentran al profesional ideal por ciudad y oficio, ven sus reseñ
 
 ## 🛠️ Tech Stack
 
-| Capa | Tecnología |
-|------|-----------|
-| Framework | [Next.js 16](https://nextjs.org/) App Router |
-| Lenguaje | TypeScript 5 |
-| Estilos | Tailwind CSS + shadcn/ui |
-| Base de datos | [Supabase](https://supabase.com/) (PostgreSQL) |
-| Autenticación | Supabase Auth |
-| Storage | Supabase Storage |
-| Pagos | MercadoPago Subscriptions API |
-| Animaciones | GSAP + CSS animations |
-| Iconos | Tabler Icons + Lucide React |
-| Deploy | [Vercel](https://vercel.com/) |
+|Capa|Tecnología|
+|---|---|
+|Framework|[Next.js 16](https://nextjs.org/) App Router|
+|Lenguaje|TypeScript 5|
+|Estilos|Tailwind CSS + shadcn/ui|
+|Base de datos|[Supabase](https://supabase.com/) (PostgreSQL)|
+|Autenticación|Supabase Auth|
+|Storage|Supabase Storage|
+|Pagos|MercadoPago Subscriptions API|
+|Animaciones|GSAP + CSS animations|
+|Iconos|Tabler Icons + Lucide React|
+|Deploy|[Vercel](https://vercel.com/)|
 
 ---
 
@@ -76,7 +77,7 @@ Los clientes encuentran al profesional ideal por ciudad y oficio, ven sus reseñ
 
 ### Pasos
 
-```bash
+```shell
 # Clonar el repositorio
 git clone https://github.com/jmsD3v/TecnoInstalador.git
 cd TecnoInstalador
@@ -98,7 +99,7 @@ Abrí [http://localhost:3000](http://localhost:3000) en tu navegador.
 
 ## 🔐 Variables de entorno
 
-```env
+```bash
 # Supabase
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
@@ -120,7 +121,7 @@ ADMIN_EMAILS=tu@email.com
 
 ## 📁 Estructura del proyecto
 
-```
+```text
 src/
 ├── app/                    # App Router — páginas y layouts
 │   ├── auth/               # Login, registro, onboarding
@@ -145,31 +146,31 @@ src/
 
 ## 🧩 Planes
 
-| Feature | Free | Pro | Premium |
-|---------|:----:|:---:|:-------:|
-| Oficios | 1 | 3 | ∞ |
-| Servicios | 3 | 10 | ∞ |
-| Fotos en galería | 5 | 30 | ∞ |
-| Presupuestos desde la app | ✗ | ✓ | ✓ |
-| Estadísticas de visitas | ✗ | ✗ | ✓ |
-| Posición en búsqueda | Normal | Mejor | Destacada |
-| Badge verificado | ✗ | ✓ | ✓ |
+|Feature|Free|Pro|Premium|
+|---|:---:|:---:|:---:|
+|Oficios|1|3|∞|
+|Servicios|3|10|∞|
+|Fotos en galería|5|30|∞|
+|Presupuestos desde la app|✗|✓|✓|
+|Estadísticas de visitas|✗|✗|✓|
+|Posición en búsqueda|Normal|Mejor|Destacada|
+|Badge verificado|✗|✓|✓|
 
 ---
 
 ## 🗺️ Rutas principales
 
-| Ruta | Descripción |
-|------|------------|
-| `/` | Landing page |
-| `/buscar` | Marketplace de profesionales |
-| `/i/[slug]` | Perfil público del instalador |
-| `/auth/login` | Inicio de sesión |
-| `/auth/register` | Registro |
-| `/dashboard` | Panel del profesional |
-| `/dashboard/plan` | Gestión de suscripción |
-| `/review/[token]` | Formulario de reseña (link único) |
-| `/admin` | Panel de administración |
+|Ruta|Descripción|
+|---|---|
+|`/`|Landing page|
+|`/buscar`|Marketplace de profesionales|
+|`/i/[slug]`|Perfil público del instalador|
+|`/auth/login`|Inicio de sesión|
+|`/auth/register`|Registro|
+|`/dashboard`|Panel del profesional|
+|`/dashboard/plan`|Gestión de suscripción|
+|`/review/[token]`|Formulario de reseña (link único)|
+|`/admin`|Panel de administración|
 
 ---
 
@@ -189,6 +190,46 @@ Este proyecto es privado. Todos los derechos reservados © 2026 TecnoInstalador.
 
 ---
 
-<div align="center">
-  <sub>Hecho con ⚡ en Argentina</sub>
-</div>
+Hecho con ⚡ en Argentina
+
+---
+
+## 🏗️ Arquitectura y Diseño
+
+TecnoInstalador es un **monolito full-stack modular** sobre Next.js 16 App Router con Server Components. No hay servidor separado — el backend vive en Route Handlers dentro del mismo proyecto.
+
+### Patrón general
+
+- **Server Components por defecto** — rendering en servidor para SEO y performance
+- **Client Components** sólo donde hay interactividad (modales, formularios, animaciones)
+- **Proxy middleware** (`src/proxy.ts`) — único punto de control para auth, headers de seguridad y routing de dominios personalizados
+- **Cron jobs diarios** como módulo de background processing (sincronización de pagos, secuencias de email, auto-invitaciones)
+
+### Módulos principales
+
+|Módulo|Responsabilidad|
+|---|---|
+|Auth & Sesión|Supabase Auth + protección de rutas en proxy (8h max session)|
+|Marketplace|Búsqueda pública, perfiles de instaladores, tracking de contactos|
+|Dashboard|Panel del profesional: perfil, galería, estadísticas, referidos, widget|
+|Admin|Gestión de usuarios, suscripciones, reseñas, verificaciones, dominios|
+|Pagos|MercadoPago preapprovals + polling cron diario (sin webhooks)|
+|Emails|Resend: welcome, onboarding D+3, upgrade D+14, notificaciones de leads|
+|Dominios|Routing automático de dominios personalizados Premium vía proxy|
+
+### Infraestructura
+
+|Capa|Tecnología|
+|---|---|
+|DB + Auth + Storage|Supabase (PostgreSQL + RLS)|
+|Deploy|Vercel (serverless + Edge)|
+|Pagos|MercadoPago Subscriptions API|
+|Email|Resend|
+|Error tracking|Sentry|
+|Analytics|Plausible.io|
+
+### Seguridad por diseño
+
+CSP nonce-based por request, HSTS, X-Frame-Options DENY, Permissions-Policy, RLS en todas las tablas Supabase, triple separación de clientes (browser / SSR / service-role), doble validación de permisos en rutas admin.
+
+> Análisis completo en [`docs/architecture/ARCHITECTURE.md`](docs/architecture/ARCHITECTURE.md)
